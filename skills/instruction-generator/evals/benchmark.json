@@ -1,0 +1,72 @@
+{
+    "skill": "instruction-generator",
+    "version": "1.0",
+    "description": "Quality delta between Claude without the skill vs with the skill loaded",
+    "scenarios": [
+        {
+            "scenario_id": "instruction-happy-path",
+            "without_skill": {
+                "typical_issues": [
+                    "applyTo pattern absent or set to '**' when file-specific was requested",
+                    "Rules use 'should' / 'prefer' language that is unverifiable",
+                    "File placed at root with no location guidance",
+                    "Rule set is verbose and includes explanatory prose"
+                ],
+                "quality_rating": "medium"
+            },
+            "with_skill": {
+                "improvements": [
+                    "applyTo scoped precisely to '**/*.ts'",
+                    "All rules rewritten in imperative, verifiable form",
+                    "Placement guidance for .github/instructions/ provided",
+                    "Concise variant selected based on rule complexity"
+                ],
+                "quality_rating": "high"
+            },
+            "quality_delta": "medium",
+            "delta_explanation": "applyTo precision and imperative language are the two most common gaps; skill addresses both."
+        },
+        {
+            "scenario_id": "instruction-edge-case-vague-rule",
+            "without_skill": {
+                "typical_issues": [
+                    "Vague rule emitted unchanged ('write good, clean code')",
+                    "No clarification requested",
+                    "Rule added to instruction file without evaluation"
+                ],
+                "quality_rating": "low"
+            },
+            "with_skill": {
+                "improvements": [
+                    "Vague rule rejected with explanation of why it is unverifiable",
+                    "Clarifying questions asked to extract intent",
+                    "Concrete rewrites offered as alternatives"
+                ],
+                "quality_rating": "high"
+            },
+            "quality_delta": "high",
+            "delta_explanation": "Without skill, vague rules are silently accepted and pollute instruction files."
+        },
+        {
+            "scenario_id": "instruction-repair-contradiction",
+            "without_skill": {
+                "typical_issues": [
+                    "Contradicting rule silently added to instruction file",
+                    "No check for existing rules",
+                    "Both conflicting rules present in output — undefined behavior for Claude"
+                ],
+                "quality_rating": "low"
+            },
+            "with_skill": {
+                "improvements": [
+                    "Conflict detection step in workflow prompts a check",
+                    "Explicit question asked about precedence",
+                    "Only the winning rule is emitted after resolution"
+                ],
+                "quality_rating": "high"
+            },
+            "quality_delta": "high",
+            "delta_explanation": "Silent contradictions are harmful and hard to debug. Skill prevents them entirely."
+        }
+    ]
+}

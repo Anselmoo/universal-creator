@@ -1,0 +1,73 @@
+{
+    "description": "Cross-skill integration scenario: instruction + prompt + hook working together to enforce a team workflow",
+    "version": "1.0",
+    "scenario": {
+        "id": "cross-skill-enforce-commit-workflow",
+        "title": "Enforce Conventional Commits with an instruction, a prompt, and a hook",
+        "setup": "A team wants Claude to: (1) always follow Conventional Commits format, (2) generate commit messages using a structured prompt, and (3) automatically validate the message before any git commit.",
+        "skills_involved": [
+            "instruction-generator",
+            "prompt-generator",
+            "hook-generator"
+        ],
+        "steps": [
+            {
+                "step": 1,
+                "skill": "instruction-generator",
+                "user_request": "Write workspace instructions so Claude always uses Conventional Commits format when writing commit messages",
+                "expected_output": {
+                    "file": ".github/copilot-instructions.md",
+                    "key_rules": [
+                        "All commit messages must follow Conventional Commits: <type>(<scope>): <subject>",
+                        "Valid types: feat, fix, docs, style, refactor, test, chore",
+                        "Subject line max 72 characters; no period at end",
+                        "Breaking changes must include 'BREAKING CHANGE:' in the footer"
+                    ],
+                    "applyTo": "**"
+                }
+            },
+            {
+                "step": 2,
+                "skill": "prompt-generator",
+                "user_request": "Create a zero-shot prompt that generates a Conventional Commits message from a diff",
+                "expected_output": {
+                    "file": "prompts/commit-message.prompt.md",
+                    "technique": "zero-shot",
+                    "key_elements": [
+                        "Output format constraint: exactly one Conventional Commits line",
+                        "Input: git diff content passed as {{DIFF}}",
+                        "Grounding instruction: base message only on provided diff",
+                        "No explanatory text — commit message only"
+                    ]
+                }
+            },
+            {
+                "step": 3,
+                "skill": "hook-generator",
+                "user_request": "Add a PreToolUse hook that validates any git commit command uses Conventional Commits format",
+                "expected_output": {
+                    "event": "PreToolUse",
+                    "matcher": "Bash",
+                    "if": "$TOOL_INPUT.command matches /^git commit/",
+                    "key_behaviors": [
+                        "Extracts commit message from -m argument",
+                        "Validates against Conventional Commits regex",
+                        "Returns decision: block with reason if invalid",
+                        "Returns decision: allow if valid"
+                    ]
+                }
+            }
+        ],
+        "integration_assertions": [
+            "Instruction file does not conflict with prompt template (both enforce same format)",
+            "Hook validation regex matches the format spec in the instruction file",
+            "Prompt output passes the hook validator when given a clean diff",
+            "All three artifacts can be deployed together without contradiction"
+        ],
+        "anti_patterns_to_avoid": [
+            "Instruction says 'use Conventional Commits' but prompt generates free-form messages",
+            "Hook regex is stricter than the instruction spec (false positives)",
+            "Prompt includes explanatory text that gets committed as-is (hook blocks it)"
+        ]
+    }
+}

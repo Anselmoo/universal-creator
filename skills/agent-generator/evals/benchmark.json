@@ -1,0 +1,74 @@
+{
+    "skill": "agent-generator",
+    "version": "1.0",
+    "description": "Quality delta between Claude without the skill vs with the skill loaded",
+    "scenarios": [
+        {
+            "scenario_id": "agent-happy-path",
+            "without_skill": {
+                "typical_issues": [
+                    "Description written in first person ('I will review...')",
+                    "Tools list includes write or terminal tools unnecessarily",
+                    "No non-goals section — agent scope is ambiguous",
+                    "Completion criteria absent or too vague to enforce"
+                ],
+                "quality_rating": "low"
+            },
+            "with_skill": {
+                "improvements": [
+                    "Third-person description required by workflow step 1",
+                    "Tool policy explicitly maps to read-only for inspection agents",
+                    "Non-goals section produced from template",
+                    "Concrete, measurable completion criteria generated"
+                ],
+                "quality_rating": "high"
+            },
+            "quality_delta": "high",
+            "delta_explanation": "Without skill, agent definitions are routinely missing non-goals and have first-person descriptions that break discovery."
+        },
+        {
+            "scenario_id": "agent-edge-case-god-agent",
+            "without_skill": {
+                "typical_issues": [
+                    "Produces a single god-agent with all requested capabilities",
+                    "Tool list is unrestricted ('all tools')",
+                    "No delegation boundaries or handoff rules",
+                    "Agent description is a feature list, not a mission"
+                ],
+                "quality_rating": "low"
+            },
+            "with_skill": {
+                "improvements": [
+                    "God-agent anti-pattern is explicitly named and rejected",
+                    "Decomposition into specialized agents is proposed",
+                    "Each sub-agent gets its own bounded tool policy"
+                ],
+                "quality_rating": "high"
+            },
+            "quality_delta": "high",
+            "delta_explanation": "Monolithic agent creation is a default behavior without skill intervention."
+        },
+        {
+            "scenario_id": "agent-repair-missing-scope",
+            "without_skill": {
+                "typical_issues": [
+                    "Rewrites without asking clarifying questions",
+                    "Adds plausible-sounding but invented scope",
+                    "May not detect first-person description problem",
+                    "Missing fields silently omitted"
+                ],
+                "quality_rating": "medium"
+            },
+            "with_skill": {
+                "improvements": [
+                    "Clarifying questions asked before any rewrite",
+                    "All missing fields identified and listed explicitly",
+                    "First-person description flagged and corrected"
+                ],
+                "quality_rating": "high"
+            },
+            "quality_delta": "medium",
+            "delta_explanation": "Skill prevents hallucinated scope by requiring questions before repair."
+        }
+    ]
+}

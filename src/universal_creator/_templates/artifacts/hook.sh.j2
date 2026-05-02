@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Claude Code lifecycle hook: {{ name }}
+# Event: TODO (e.g. PreToolUse, PostToolUse, Stop, SessionStart)
+#
+# Receives JSON on stdin. Writes JSON to stdout.
+# Exit 0 = allow / continue.  Exit 1 = block / abort.
+#
+# See: https://docs.anthropic.com/en/docs/claude-code/hooks
+
+set -euo pipefail
+
+INPUT="$(cat)"
+
+# TODO: parse INPUT with jq and implement hook logic
+# Example: extract tool name
+# TOOL="$(echo "$INPUT" | jq -r '.tool_name // empty')"
+
+# Output JSON feedback (optional, shown to Claude)
+echo '{"decision": "allow", "reason": "TODO: explain decision"}'
+exit 0

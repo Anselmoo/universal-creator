@@ -1,0 +1,81 @@
+{
+    "skill": "prompt-generator",
+    "version": "1.0",
+    "graded_scenarios": [
+        {
+            "scenario_id": "prompt-happy-path",
+            "assertions": [
+                {
+                    "id": "g-prompt-1",
+                    "assertion": "Skill starts at zero-shot on the escalation ladder",
+                    "evidence": "Output does not produce few-shot examples unless zero-shot is evaluated first",
+                    "required": true
+                },
+                {
+                    "id": "g-prompt-2",
+                    "assertion": "Output format constraint is explicit",
+                    "evidence": "Prompt specifies exactly one of: 'positive', 'negative', 'neutral' as valid outputs",
+                    "required": true
+                },
+                {
+                    "id": "g-prompt-3",
+                    "assertion": "Technique justification is provided",
+                    "evidence": "Output includes a rationale comment explaining why the chosen technique is appropriate",
+                    "required": true
+                },
+                {
+                    "id": "g-prompt-4",
+                    "assertion": "At least one eval scenario is included",
+                    "evidence": "Output or companion file contains a happy-path test case",
+                    "required": false
+                }
+            ]
+        },
+        {
+            "scenario_id": "prompt-edge-case-hallucination",
+            "assertions": [
+                {
+                    "id": "g-hall-1",
+                    "assertion": "Prompt includes explicit grounding instruction",
+                    "evidence": "Prompt contains 'based only on provided context' or equivalent",
+                    "required": true
+                },
+                {
+                    "id": "g-hall-2",
+                    "assertion": "Prompt handles missing information gracefully",
+                    "evidence": "Prompt includes fallback instruction like 'if not in context, say I don't know'",
+                    "required": true
+                },
+                {
+                    "id": "g-hall-3",
+                    "assertion": "Prompt does not rely on parametric knowledge",
+                    "evidence": "No instruction like 'use your knowledge' or 'you know about this topic'",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "scenario_id": "prompt-repair-over-prompting",
+            "assertions": [
+                {
+                    "id": "g-over-1",
+                    "assertion": "Skill identifies the over-prompting anti-pattern",
+                    "evidence": "Output names the excessive CAPS/CRITICAL/ALWAYS pattern as harmful",
+                    "required": true
+                },
+                {
+                    "id": "g-over-2",
+                    "assertion": "Rewritten prompt uses normal prose",
+                    "evidence": "Output contains no ALL-CAPS words except where semantically required",
+                    "required": true
+                },
+                {
+                    "id": "g-over-3",
+                    "assertion": "Rewritten prompt is shorter than the original",
+                    "evidence": "Token/word count of output prompt is lower than the provided example",
+                    "required": false
+                }
+            ]
+        }
+    ]
+}

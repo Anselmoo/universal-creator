@@ -1,0 +1,39 @@
+{
+    "skill": "instruction-generator",
+    "version": "1.0",
+    "scenarios": [
+        {
+            "id": "instruction-happy-path",
+            "description": "User wants TypeScript coding conventions",
+            "query": "Write instructions for TypeScript files: strict mode, no any, named exports only",
+            "expected_behavior": [
+                "Produces an .instructions.md file with applyTo: '**/*.ts'",
+                "All rules are imperative and verifiable — no 'should' or 'prefer'",
+                "Recommends workspace scope (.github/instructions/)",
+                "File length matches concise variant (under 20 lines of rules)"
+            ]
+        },
+        {
+            "id": "instruction-edge-case-vague-rule",
+            "description": "User provides a vague rule that cannot be applied",
+            "query": "Add a rule: write good, clean code",
+            "expected_behavior": [
+                "Rejects the vague rule as unverifiable",
+                "Asks what specific behavior 'good clean code' means",
+                "Offers concrete rewrites: function length limit, naming pattern, etc.",
+                "Does NOT emit the original vague rule unchanged"
+            ]
+        },
+        {
+            "id": "instruction-repair-contradiction",
+            "description": "User adds a rule that contradicts an existing workspace instruction",
+            "query": "Add a rule: always use default exports",
+            "expected_behavior": [
+                "Checks or asks about existing instructions that may conflict",
+                "Flags contradiction if workspace already says 'use named exports only'",
+                "Asks user to confirm which rule should take precedence",
+                "Does NOT silently add a contradicting rule"
+            ]
+        }
+    ]
+}

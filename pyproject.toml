@@ -1,0 +1,104 @@
+[project]
+name = "universal-creator"
+version = "0.1.0"
+description = "Skill scaffolding and artifact generation toolkit for VS Code Copilot / Claude agents"
+requires-python = ">=3.13"
+dependencies = [
+    "typer>=0.12",
+    "questionary>=2.0",
+    "rich>=13.0",
+    "pydantic>=2.0",
+    "jinja2>=3.1",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+universal-creator = "universal_creator.cli:main"
+
+[dependency-groups]
+dev = ["poethepoet>=0.33", "ruff>=0.15"]
+
+[build-system]
+requires = ["uv_build>=0.7.19,<0.8.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = "src"
+data = ["skills"]
+
+# ── poethepoet tasks ─────────────────────────────────────────────────────────
+
+[tool.poe.tasks]
+
+[tool.poe.tasks.validate]
+help = "Validate all skill SKILL.md frontmatter and script parity"
+cmd = "python scripts/run_validations.py"
+
+[tool.poe.tasks.lint]
+help = "Lint skills/, scripts/, and src/ with ruff"
+cmd = "ruff check skills/ scripts/ src/"
+
+[tool.poe.tasks.fmt]
+help = "Format skills/, scripts/, and src/ with ruff"
+cmd = "ruff format skills/ scripts/ src/"
+
+[tool.poe.tasks.check]
+help = "Run lint then validate-all (pre-push gate)"
+sequence = ["lint", "validate-all"]
+
+[tool.poe.tasks.validate-hook]
+help = "Validate hook-generator output files in a path (pass -- <path> to override CWD)"
+cmd = "python skills/hook-generator/scripts/validate_hook_output.py"
+
+[tool.poe.tasks.validate-instructions]
+help = "Validate instruction output files in a path (pass -- <path> to override CWD)"
+cmd = "python skills/instruction-generator/scripts/validate_instruction_output.py"
+
+[tool.poe.tasks.validate-prompts]
+help = "Validate prompt output files in a path (pass -- <path> to override CWD)"
+cmd = "python skills/prompt-generator/scripts/validate_prompt_output.py"
+
+[tool.poe.tasks.validate-agents]
+help = "Validate agent-generator output files in a path (pass -- <path> to override CWD)"
+cmd = "python skills/agent-generator/scripts/validate_agent_output.py"
+
+[tool.poe.tasks.validate-all]
+help = "Run all validations: skill frontmatter + per-skill domain validators (same as validate)"
+sequence = ["validate"]
+
+[tool.poe.tasks.sync]
+help = "Sync canonical scripts from agent-generator to all other skills (--overwrite to force)"
+cmd = "python -m universal_creator sync"
+
+[tool.poe.tasks.new-skill]
+help = "Scaffold a new skill (--name NAME --mode empty|boilerplate [--overwrite])"
+cmd = "python -m universal_creator new-skill"
+
+[tool.poe.tasks.package]
+help = "Package a skill directory into a distributable zip (--skill NAME)"
+cmd = "python -m universal_creator package"
+
+[tool.poe.tasks.eval]
+help = "Run evals for a skill (--skill NAME)"
+cmd = "python -m universal_creator eval"
+
+[tool.poe.tasks.install-skill]
+help = "Install a bundled skill to Claude/Copilot (--skill NAME --host claude|copilot --scope local|global)"
+cmd = "python -m universal_creator install"
+
+[tool.poe.tasks.menu]
+help = "Interactive skill menu (install or scaffold)"
+cmd = "python -m universal_creator menu"
+
+# ── ruff ─────────────────────────────────────────────────────────────────────
+
+[tool.ruff]
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+extend-ignore = ["E501"]
+
+[tool.ruff.format]
+# Black-compatible defaults
+docstring-code-format = true

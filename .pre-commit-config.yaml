@@ -1,0 +1,41 @@
+exclude: ^(?:\.mcp-ai-agent-guidelines/|\.serena/|\.ruff_cache/|\.venv/|skills/.+/scripts/__pycache__/)
+
+default_language_version:
+  python: python3.13
+
+repos:
+  # ── Whitespace / line-ending hygiene ────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+
+  # ── Ruff: lint (check + auto-fix) then format ───────────────────────────────
+  # Config lives in pyproject.toml [tool.ruff] — no inline args needed here.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.11
+    hooks:
+      # Linter — checks and auto-fixes unused imports, undefined names, etc.
+      - id: ruff-check
+        args: [--fix]
+        types_or: [python, pyi]
+      # Formatter — Black-compatible code formatting
+      - id: ruff-format
+        types_or: [python, pyi]
+
+  # ── Skill structure validation ───────────────────────────────────────────────
+  - repo: local
+    hooks:
+      - id: validate-skills
+        name: Validate skill SKILL.md frontmatter
+        language: python
+        entry: python scripts/run_validations.py
+        additional_dependencies: [pyyaml]
+        always_run: true
+        pass_filenames: false

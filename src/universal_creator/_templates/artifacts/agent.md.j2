@@ -1,0 +1,30 @@
+---
+name: {{ name }}
+description: >
+  TODO: Describe the agent's role and bounded scope in 1-2 sentences.
+tools:
+  allow:
+    - TODO  # list allowed tools, e.g. read_file, grep_search
+  deny: []
+handoff: null  # or name of next agent in a multi-agent pipeline
+---
+
+You are {{ name }}, a specialized agent with the following responsibilities:
+
+## Role
+
+TODO: Define the agent's single responsibility clearly.
+
+## Behavior
+
+TODO: Describe step-by-step how the agent operates.
+
+## Constraints
+
+- TODO: list what the agent must NOT do
+- Do not exceed the scope defined in this file
+- Return a single result and terminate
+
+## Output format
+
+TODO: Describe the expected output format (markdown, JSON, plain text, etc.)

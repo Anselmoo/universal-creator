@@ -1,0 +1,29 @@
+{
+  "skill": "{{ name }}",
+  "version": "0.1.0",
+  "evals": [
+    {
+      "id": "{{ name }}-gen-01",
+      "type": "generation",
+      "description": "TODO: Describe the first generation task",
+      "input": "TODO: Provide the user prompt",
+      "expected_contains": ["TODO: keyword or phrase that should appear in output"],
+      "expected_missing": []
+    },
+    {
+      "id": "{{ name }}-gen-02",
+      "type": "generation",
+      "description": "TODO: Describe the second generation task",
+      "input": "TODO: Provide the user prompt",
+      "expected_contains": [],
+      "expected_missing": []
+    },
+    {
+      "id": "{{ name }}-negative-01",
+      "type": "near-miss",
+      "description": "TODO: A case where a neighboring skill should be used instead",
+      "input": "TODO: Provide the user prompt",
+      "expected_behavior": "TODO: Describe expected behavior (e.g., delegate to X skill)"
+    }
+  ]
+}

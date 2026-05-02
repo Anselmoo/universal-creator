@@ -1,0 +1,41 @@
+{
+    "skill": "agent-generator",
+    "version": "1.0",
+    "scenarios": [
+        {
+            "id": "agent-happy-path",
+            "description": "User requests a domain-expert agent for code review",
+            "query": "Create an agent that reviews TypeScript files for security issues",
+            "expected_behavior": [
+                "Produces a .agent.md file with correct YAML frontmatter",
+                "Description is written in third person",
+                "Tools list is read-only (read_file, grep_search) — no write tools",
+                "Mission statement is one imperative sentence",
+                "Non-goals include 'does not modify files'",
+                "Completion criteria are concrete and measurable"
+            ]
+        },
+        {
+            "id": "agent-edge-case-god-agent",
+            "description": "User requests one agent that does everything",
+            "query": "Create an agent that handles planning, coding, reviewing, and deploying",
+            "expected_behavior": [
+                "Identifies the god-agent anti-pattern",
+                "Suggests splitting into specialized agents per stage",
+                "Offers to create each sub-agent separately",
+                "Does NOT produce a single monolithic agent definition"
+            ]
+        },
+        {
+            "id": "agent-repair-missing-scope",
+            "description": "User provides an incomplete agent definition missing non-goals",
+            "query": "Improve this agent definition: name: helper, does helpful things",
+            "expected_behavior": [
+                "Identifies missing: non-goals, output format, completion criteria, tool list",
+                "Asks clarifying questions before writing the improved definition",
+                "Rewrites description in third person",
+                "Produces all required frontmatter fields"
+            ]
+        }
+    ]
+}

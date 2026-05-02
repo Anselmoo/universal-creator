@@ -1,0 +1,72 @@
+{
+    "skill": "hook-generator",
+    "version": "1.0",
+    "description": "Quality delta between Claude without the skill vs with the skill loaded",
+    "scenarios": [
+        {
+            "scenario_id": "hook-happy-path",
+            "without_skill": {
+                "typical_issues": [
+                    "Uses PreToolUse instead of PostToolUse for post-edit formatting",
+                    "Missing matcher field — hook applies to all tool calls",
+                    "Command does not reference the edited file path",
+                    "Wraps synchronous formatter in unnecessary async background process"
+                ],
+                "quality_rating": "low"
+            },
+            "with_skill": {
+                "improvements": [
+                    "Correct PostToolUse event selection explained by the workflow",
+                    "Matcher scoped to Edit/Write tools only",
+                    "File path placeholder from $TOOL_RESPONSE injected into command",
+                    "Synchronous execution used appropriately"
+                ],
+                "quality_rating": "high"
+            },
+            "quality_delta": "high",
+            "delta_explanation": "Event and scope errors are the two most common hook bugs; skill eliminates both."
+        },
+        {
+            "scenario_id": "hook-edge-case-broad-matcher",
+            "without_skill": {
+                "typical_issues": [
+                    "Generates broad auto-approve hook without warning",
+                    "No if-field narrowing — all Bash commands approved",
+                    "No security caution or safer alternative suggested"
+                ],
+                "quality_rating": "low"
+            },
+            "with_skill": {
+                "improvements": [
+                    "Security warning issued before generating any approval hook",
+                    "if-field narrowing guidance provided",
+                    "Safer 'ask' behavior offered as default alternative"
+                ],
+                "quality_rating": "high"
+            },
+            "quality_delta": "high",
+            "delta_explanation": "Without skill, broad approvals are a safety failure. Skill adds mandatory safety checkpoint."
+        },
+        {
+            "scenario_id": "hook-repair-wrong-event",
+            "without_skill": {
+                "typical_issues": [
+                    "Uses SessionStart instead of PostCompact for context re-injection",
+                    "Context injected at wrong lifecycle point — not triggered after compaction",
+                    "Output may be empty string rather than actual content"
+                ],
+                "quality_rating": "medium"
+            },
+            "with_skill": {
+                "improvements": [
+                    "PostCompact event correctly identified from event reference",
+                    "Context injection timed precisely to compaction trigger",
+                    "Non-empty content requirement validated by checklist"
+                ],
+                "quality_rating": "high"
+            },
+            "quality_delta": "medium",
+            "delta_explanation": "PostCompact vs SessionStart is a subtle distinction; skill's event reference eliminates guesswork."
+        }
+    ]
+}
