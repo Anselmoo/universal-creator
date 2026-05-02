@@ -1,4 +1,4 @@
-"""Locate bundled skills whether the package is installed (uvx) or editable (uv sync)."""
+"""Locate bundled skills for both wheel and editable installs."""
 
 from __future__ import annotations
 
@@ -8,38 +8,64 @@ from pathlib import Path
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 
+def _looks_like_skills_container(path: Path) -> bool:
+    """Return True when a directory contains bundled skill directories."""
+    if not path.is_dir():
+        return False
+
+    try:
+        return any(
+            child.is_dir() and (child / "SKILL.md").is_file()
+            for child in path.iterdir()
+        )
+    except OSError:
+        return False
+
+
+def _candidate_skill_roots() -> list[Path]:
+    """Return candidate directories that may contain bundled skills.
+
+    In wheel installs, uv_build data files are installed into ``purelib``
+    alongside the package, so skills appear as top-level directories next to
+    ``universal_creator``.
+    """
+    candidates: list[Path] = []
+
+    # Installed package root (wheel / uvx / uv tool install).
+    try:
+        from importlib.resources import as_file, files
+
+        with as_file(files("universal_creator")) as package_dir:
+            pkg_path = Path(package_dir)
+            candidates.append(pkg_path.parent)
+
+            # Backward-compatible fallback for older layouts.
+            candidates.append(
+                pkg_path.parent.parent / "share" / "universal-creator" / "skills"
+            )
+    except Exception:
+        pass
+
+    # Editable install / local development repository layout.
+    candidates.append(_REPO_ROOT / "skills")
+    return candidates
+
+
 def get_bundled_skills_dir() -> Path:
     """Return the directory that contains the bundled skills.
 
     Resolution order:
-    1. Installed wheel: skills land in the wheel's .data/ directory, accessible
-       via importlib.metadata / sys.prefix after ``uvx`` / ``uv tool install``.
-    2. Editable install (``uv sync``): fall back to the repo's own skills/ dir.
+    1. Installed wheel/tool: skill directories are available in ``purelib``
+       alongside the package.
+    2. Editable install: fall back to the repository's ``skills/`` directory.
     """
-    # Try importlib.resources path first (wheel install)
-    try:
-        from importlib.resources import files
-
-        pkg_data = files("universal_creator")
-        # When built with uv_build data=["skills"], the skills dir is placed
-        # adjacent to the package under <prefix>/share/universal-creator/skills/
-        # We navigate from the package location to find it.
-        candidate = (
-            Path(str(pkg_data)).parent.parent / "share" / "universal-creator" / "skills"
-        )
-        if candidate.is_dir():
+    for candidate in _candidate_skill_roots():
+        if _looks_like_skills_container(candidate):
             return candidate
-    except Exception:
-        pass
-
-    # Editable install: skills/ lives at repo root
-    editable = _REPO_ROOT / "skills"
-    if editable.is_dir():
-        return editable
 
     print(
-        "ERROR: Cannot locate bundled skills directory. "
-        "Run `uv sync` or reinstall the package.",
+        "ERROR: Cannot locate bundled skills in the installed package. "
+        "Reinstall `universal-creator` and try again.",
         file=sys.stderr,
     )
     sys.exit(1)
