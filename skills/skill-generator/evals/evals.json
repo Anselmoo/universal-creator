@@ -1,0 +1,46 @@
+{
+    "skill": "skill-generator",
+    "version": "1.0",
+    "scenarios": [
+        {
+            "id": "skill-gen-happy-path",
+            "description": "User requests a skill for generating Markdown-to-HTML converters",
+            "query": "Generate a skill called markdown-renderer that creates HTML files from Markdown source",
+            "expected_behavior": [
+                "Produces a SKILL.md with correct YAML frontmatter (name: markdown-renderer)",
+                "Description mentions the artifact type ('HTML file') and trigger phrases",
+                "Description includes a DO NOT USE clause naming competing skills",
+                "## Workflow section is present with numbered steps",
+                "## Anti-patterns section is present with at least three entries",
+                "## Output format section specifies the produced file(s)",
+                "generate_markdown-renderer_stub.py is created in scripts/",
+                "validate_markdown-renderer_output.py is created in scripts/",
+                "requirements.txt declares pyyaml>=6.0"
+            ]
+        },
+        {
+            "id": "skill-gen-sql-migration",
+            "description": "User requests a skill for SQL migration file generation",
+            "query": "I want to create a skill that generates SQL migration files from schema diffs. Name it sql-migrator.",
+            "expected_behavior": [
+                "Produces a SKILL.md with name: sql-migrator",
+                "## Conventions section defines required migration file fields (UP/DOWN blocks, timestamp, description)",
+                "Anti-patterns include at least: missing rollback (DOWN) block, non-idempotent migrations, and missing timestamp",
+                "generate_sql-migrator_stub.py reads from a template file",
+                "validate_sql-migrator_output.py checks for required UP/DOWN structure",
+                "evals/evals.json contains at least one test scenario"
+            ]
+        },
+        {
+            "id": "skill-gen-near-miss-agent",
+            "description": "User asks for a 'skill' but actually needs an agent definition",
+            "query": "Create a skill for a code review agent that checks TypeScript files",
+            "expected_behavior": [
+                "Identifies that the request describes an agent (bounded role, tool restrictions, returns a single result)",
+                "Recommends using agent-generator instead of skill-generator",
+                "Does NOT produce a skill directory for a code review agent",
+                "Explains the distinction: a skill packages reusable generator logic; an agent is a bounded role with tool policies"
+            ]
+        }
+    ]
+}

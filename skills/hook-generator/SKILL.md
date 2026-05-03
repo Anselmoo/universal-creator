@@ -13,6 +13,7 @@ description: >-
   API prompt engineering (use prompt-generator skill); for creating Claude agents
   or sub-agents (use agent-generator skill); for writing VS Code instructions (use
   instruction-generator skill).
+license: "MIT"
 ---
 
 # Hook Generator

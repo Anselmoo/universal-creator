@@ -5,7 +5,7 @@ description: >-
   prompting techniques: zero-shot, few-shot, chain-of-thought, prompt chaining,
   ReAct, meta-prompting, self-consistency, generate-knowledge, tree-of-thoughts,
   RAG, ART, APE, active-prompt, DSP, PAL, reflexion, multimodal-CoT, and
-  graph-prompting (full catalog: docs/techniques.md; examples: examples/techniques/).
+  graph-prompting (full catalog: docs/techniques.md; examples: examples/).
   Use when the user wants to write a Claude system prompt, create a .prompt.md file,
   improve an existing prompt, choose between prompting techniques, structure
   multi-step reasoning, or apply context-budget-aware prompt engineering.
@@ -13,6 +13,7 @@ description: >-
   DO NOT USE for Claude Code lifecycle hooks (use hook-generator); for creating
   agent role definitions (use agent-generator); for workspace instructions (use
   instruction-generator).
+license: "MIT"
 ---
 
 # Prompt Generator
@@ -36,7 +37,7 @@ Start at the lowest rung that works. Move up only when lower rungs fail evaluati
 | 5 | **ReAct** | External lookups/tools needed; state changes during task execution |
 
 Full technique catalog (18 entries): [docs/techniques.md](docs/techniques.md)
-Worked examples for every technique: [examples/techniques/](examples/techniques/)
+Worked examples for every technique: [examples/](examples/)
 
 ## Workflow
 

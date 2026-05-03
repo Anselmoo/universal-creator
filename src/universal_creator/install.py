@@ -1,10 +1,16 @@
-"""Install a bundled skill to the correct directory for a given host and scope.
+"""Install a bundled skill or agent to the correct directory for a given host and scope.
 
 Hosts and their target paths:
-    claude  · local   → <cwd>/.claude/skills/<name>/
-    claude  · global  → ~/.claude/skills/<name>/
-    copilot · local   → <cwd>/.github/skills/<name>/
-    copilot · global  → ~/.copilot/skills/<name>/
+    Skills:
+        claude  · local   → <cwd>/.claude/skills/<name>/
+        claude  · global  → ~/.claude/skills/<name>/
+        copilot · local   → <cwd>/.github/skills/<name>/
+        copilot · global  → ~/.copilot/skills/<name>/
+    Agents:
+        claude  · local   → <cwd>/.claude/agents/<name>.agent.md
+        claude  · global  → ~/.claude/agents/<name>.agent.md
+        copilot · local   → <cwd>/.github/agents/<name>.agent.md
+        copilot · global  → ~/.copilot/agents/<name>.agent.md
 """
 
 from __future__ import annotations
@@ -13,7 +19,12 @@ import shutil
 import sys
 from pathlib import Path
 
-from universal_creator.resources import get_bundled_skills_dir, list_bundled_skills
+from universal_creator.resources import (
+    get_bundled_agents_dir,
+    get_bundled_skills_dir,
+    list_bundled_agents,
+    list_bundled_skills,
+)
 
 _HOST_PATHS: dict[str, dict[str, Path]] = {
     "claude": {
@@ -26,10 +37,29 @@ _HOST_PATHS: dict[str, dict[str, Path]] = {
     },
 }
 
+_AGENT_HOST_PATHS: dict[str, dict[str, Path]] = {
+    "claude": {
+        "local": Path(".claude") / "agents",
+        "global": Path.home() / ".claude" / "agents",
+    },
+    "copilot": {
+        "local": Path(".github") / "agents",
+        "global": Path.home() / ".copilot" / "agents",
+    },
+}
+
 
 def resolve_target(host: str, scope: str, cwd: Path | None = None) -> Path:
     """Return the absolute target directory for the given host + scope."""
     base = _HOST_PATHS[host][scope]
+    if scope == "local" and cwd:
+        base = cwd / base
+    return base.resolve()
+
+
+def resolve_agent_target(host: str, scope: str, cwd: Path | None = None) -> Path:
+    """Return the absolute agents directory for the given host + scope."""
+    base = _AGENT_HOST_PATHS[host][scope]
     if scope == "local" and cwd:
         base = cwd / base
     return base.resolve()
@@ -70,4 +100,42 @@ def install_skill(
     target_dir.mkdir(parents=True, exist_ok=True)
     shutil.copytree(src, dest)
     print(f"Installed '{skill_name}' → {dest}")
+    return 0
+
+
+def install_agent(
+    agent_name: str,
+    host: str,
+    scope: str,
+    cwd: Path | None = None,
+    overwrite: bool = False,
+) -> int:
+    """Copy a bundled agent definition file to the target agents directory.
+
+    Returns 0 on success, 1 on error.
+    """
+    available = list_bundled_agents()
+    if agent_name not in available:
+        print(
+            f"ERROR: Agent '{agent_name}' not found. Available: {', '.join(available)}",
+            file=sys.stderr,
+        )
+        return 1
+
+    src = get_bundled_agents_dir() / f"{agent_name}.agent.md"
+    target_dir = resolve_agent_target(host, scope, cwd or Path.cwd())
+    dest = target_dir / f"{agent_name}.agent.md"
+
+    if dest.exists():
+        if not overwrite:
+            print(
+                f"ERROR: {dest} already exists. Pass --overwrite to replace.",
+                file=sys.stderr,
+            )
+            return 1
+        dest.unlink()
+
+    target_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, dest)
+    print(f"Installed '{agent_name}' → {dest}")
     return 0

@@ -1,4 +1,4 @@
-"""Locate bundled skills for both wheel and editable installs."""
+"""Locate bundled skills and agents for both wheel and editable installs."""
 
 from __future__ import annotations
 
@@ -76,4 +76,67 @@ def list_bundled_skills() -> list[str]:
     skills_dir = get_bundled_skills_dir()
     return sorted(
         d.name for d in skills_dir.iterdir() if d.is_dir() and (d / "SKILL.md").exists()
+    )
+
+
+# ── agents ────────────────────────────────────────────────────────────────────
+
+
+def _looks_like_agents_container(path: Path) -> bool:
+    """Return True when a directory contains bundled agent definition files."""
+    if not path.is_dir():
+        return False
+    try:
+        return any(
+            child.is_file() and child.suffix == ".md" and child.stem.endswith(".agent")
+            for child in path.iterdir()
+        )
+    except OSError:
+        return False
+
+
+def _candidate_agent_roots() -> list[Path]:
+    """Return candidate directories that may contain bundled agent files."""
+    candidates: list[Path] = []
+
+    try:
+        from importlib.resources import as_file, files
+
+        with as_file(files("universal_creator")) as package_dir:
+            pkg_path = Path(package_dir)
+            candidates.append(pkg_path.parent / "agents")
+    except Exception:
+        pass
+
+    # Editable install / local development.
+    candidates.append(_REPO_ROOT / "agents")
+    return candidates
+
+
+def get_bundled_agents_dir() -> Path:
+    """Return the directory that contains the bundled agents.
+
+    Resolution order:
+    1. Installed wheel/tool: agents/ directory alongside the package.
+    2. Editable install: fall back to the repository's ``agents/`` directory.
+    """
+    for candidate in _candidate_agent_roots():
+        if _looks_like_agents_container(candidate):
+            return candidate
+
+    print(
+        "ERROR: Cannot locate bundled agents in the installed package. "
+        "Reinstall `universal-creator` and try again.",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
+
+def list_bundled_agents() -> list[str]:
+    """Return sorted list of available agent names (without .agent.md suffix)."""
+    agents_dir = get_bundled_agents_dir()
+    return sorted(
+        child.name.removesuffix(".agent.md")
+        for child in agents_dir.iterdir()
+        if child.is_file() and child.suffix == ".md" and child.stem.endswith(".agent")
     )

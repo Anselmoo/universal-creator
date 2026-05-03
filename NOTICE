@@ -1,0 +1,37 @@
+universal-creator — NOTICES
+============================
+
+This software is copyright (c) 2026 Anselm Hahn and distributed under
+the MIT License (see LICENSE).
+
+
+Third-party attributions
+------------------------
+
+### Anthropic skill-creator (design reference)
+
+The skill framework conventions used in this project — including the SKILL.md
+frontmatter schema, the eval workflow (evals.json / grading.json /
+benchmark.json), the eval-viewer, and the description-optimisation loop — are
+based on the `skill-creator` skill published by Anthropic, Inc. at:
+
+  https://github.com/anthropics/skills/tree/main/skills/skill-creator
+
+That work is distributed under the Apache License, Version 2.0:
+
+  Copyright (c) Anthropic, Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+No source code from the Anthropic repository has been copied verbatim into
+this project; the attribution above covers conceptual and structural influence.

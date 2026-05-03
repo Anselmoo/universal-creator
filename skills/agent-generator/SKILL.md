@@ -11,6 +11,7 @@ description: >-
   and role boundaries. DO NOT USE for Claude Code lifecycle hooks (use hook-generator);
   for writing prompts for one-shot tasks (use prompt-generator); for writing
   always-on workspace instructions (use instruction-generator).
+license: "MIT"
 ---
 
 # Agent Generator

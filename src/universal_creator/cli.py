@@ -110,6 +110,33 @@ def cmd_install(
     )
 
 
+# ── install-agent ─────────────────────────────────────────────────────────────
+
+
+@app.command("install-agent")
+def cmd_install_agent(
+    agent: Annotated[str, typer.Option("--agent", "-a", help="Agent name to install")],
+    host: Annotated[str, typer.Option("--host", help="claude | copilot")] = "claude",
+    scope: Annotated[str, typer.Option("--scope", help="local | global")] = "local",
+    overwrite: Annotated[bool, typer.Option("--overwrite/--no-overwrite")] = False,
+) -> None:
+    """Install a bundled agent definition to Claude or GitHub Copilot (local or global)."""
+    from universal_creator.install import install_agent
+    from universal_creator.models import AgentInstallConfig
+
+    try:
+        cfg = AgentInstallConfig(
+            agent=agent, host=host, scope=scope, overwrite=overwrite
+        )
+    except ValidationError as exc:
+        typer.echo(f"Error: {exc.errors()[0]['msg']}", err=True)
+        raise typer.Exit(1)
+
+    raise typer.Exit(
+        install_agent(cfg.agent, cfg.host, cfg.scope, Path.cwd(), cfg.overwrite)
+    )
+
+
 # ── sync ──────────────────────────────────────────────────────────────────────
 
 

@@ -7,6 +7,7 @@ or explicitly via ``universal-creator menu`` / ``poe menu``.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, Literal, cast
 
 import questionary
 from pydantic import ValidationError
@@ -30,12 +31,12 @@ def _header() -> None:
     )
 
 
-def _ask(prompt: str, choices: list[str]) -> str:
+def _ask(prompt: str, choices: list[Any]) -> str:
     """Show an arrow-key select via questionary; SystemExit on cancel."""
     result = questionary.select(prompt, choices=choices).ask()
     if result is None:
         raise SystemExit(0)
-    return result
+    return str(result)
 
 
 def _confirm(prompt: str, default: bool = True) -> bool:
@@ -44,11 +45,17 @@ def _confirm(prompt: str, default: bool = True) -> bool:
     return bool(result)
 
 
+def _confirm_replace(path: Path, kind: str) -> bool:
+    """Ask whether an existing install/scaffold target should be replaced."""
+    console.print(f"[yellow]{kind} already exists:[/yellow] [dim]{path}[/dim]")
+    return _confirm(f"Replace existing {kind.lower()}?", default=False)
+
+
 # ── option 1: install skill ───────────────────────────────────────────────────
 
 
 def _menu_install() -> None:
-    from universal_creator.install import install_skill
+    from universal_creator.install import install_skill, resolve_target
     from universal_creator.models import SkillInstallConfig
     from universal_creator.resources import list_bundled_skills
 
@@ -60,7 +67,9 @@ def _menu_install() -> None:
     console.rule("[bold]Install a skill[/bold]")
 
     skill = _ask("Select skill", available)
-    host = _ask("Install for", ["claude", "copilot"])
+    host = cast(
+        Literal["claude", "copilot"], _ask("Install for", ["claude", "copilot"])
+    )
     scope = _ask(
         "Scope",
         [
@@ -68,7 +77,7 @@ def _menu_install() -> None:
             questionary.Choice("global (user home)", value="global"),
         ],
     )
-    scope_val = scope  # validated against Literal["local", "global"] by Choice values
+    scope_val = cast(Literal["local", "global"], scope)
 
     try:
         cfg = SkillInstallConfig(skill=skill, host=host, scope=scope_val)
@@ -81,17 +90,87 @@ def _menu_install() -> None:
         if scope_val == "local"
         else f"[dim]~/.{host}/skills/{skill}/[/dim]"
     )
+    dest = resolve_target(cfg.host, cfg.scope, cwd=Path.cwd()) / cfg.skill
     console.print(f"\nInstall [bold]{skill}[/bold] → {dest_label}")
-    if not _confirm("Proceed?", default=True):
+    overwrite = False
+    if dest.exists():
+        if not _confirm_replace(dest, "installation"):
+            console.print("[dim]Cancelled.[/dim]")
+            return
+        overwrite = True
+    elif not _confirm("Proceed?", default=True):
         console.print("[dim]Cancelled.[/dim]")
         return
 
-    code = install_skill(cfg.skill, cfg.host, cfg.scope, cwd=Path.cwd())
+    code = install_skill(
+        cfg.skill, cfg.host, cfg.scope, cwd=Path.cwd(), overwrite=overwrite
+    )
     if code == 0:
         console.print("[green]Done.[/green]")
 
 
-# ── option 2: scaffold new skill ─────────────────────────────────────────────
+# ── option 2: install agent ───────────────────────────────────────────────────
+
+
+def _menu_install_agent() -> None:
+    from universal_creator.install import install_agent, resolve_agent_target
+    from universal_creator.models import AgentInstallConfig
+    from universal_creator.resources import list_bundled_agents
+
+    available = list_bundled_agents()
+    if not available:
+        console.print("[red]No bundled agents found.[/red]")
+        return
+
+    console.rule("[bold]Install an agent[/bold]")
+
+    agent = _ask("Select agent", available)
+    host = cast(
+        Literal["claude", "copilot"], _ask("Install for", ["claude", "copilot"])
+    )
+    scope = _ask(
+        "Scope",
+        [
+            questionary.Choice("local  (current project)", value="local"),
+            questionary.Choice("global (user home)", value="global"),
+        ],
+    )
+    scope_val = cast(Literal["local", "global"], scope)
+
+    try:
+        cfg = AgentInstallConfig(agent=agent, host=host, scope=scope_val)
+    except ValidationError as exc:
+        console.print(f"[red]Validation error:[/red] {exc}")
+        return
+
+    dest_label = (
+        f"[dim].{host}/agents/{agent}.agent.md[/dim]"
+        if scope_val == "local"
+        else f"[dim]~/.{host}/agents/{agent}.agent.md[/dim]"
+    )
+    dest = (
+        resolve_agent_target(cfg.host, cfg.scope, cwd=Path.cwd())
+        / f"{cfg.agent}.agent.md"
+    )
+    console.print(f"\nInstall [bold]{agent}[/bold] → {dest_label}")
+    overwrite = False
+    if dest.exists():
+        if not _confirm_replace(dest, "installation"):
+            console.print("[dim]Cancelled.[/dim]")
+            return
+        overwrite = True
+    elif not _confirm("Proceed?", default=True):
+        console.print("[dim]Cancelled.[/dim]")
+        return
+
+    code = install_agent(
+        cfg.agent, cfg.host, cfg.scope, cwd=Path.cwd(), overwrite=overwrite
+    )
+    if code == 0:
+        console.print("[green]Done.[/green]")
+
+
+# ── option 3: scaffold new skill ─────────────────────────────────────────────
 
 
 def _menu_scaffold() -> None:
@@ -127,11 +206,18 @@ def _menu_scaffold() -> None:
         f"\nCreate [bold]{cfg.name}[/bold] "
         f"([dim]{mode}[/dim]) in [dim]skills/{cfg.name}/[/dim]"
     )
-    if not _confirm("Proceed?", default=True):
+    skill_dir = Path("skills") / cfg.name
+    overwrite = False
+    if skill_dir.exists():
+        if not _confirm_replace(skill_dir.resolve(), "scaffold target"):
+            console.print("[dim]Cancelled.[/dim]")
+            return
+        overwrite = True
+    elif not _confirm("Proceed?", default=True):
         console.print("[dim]Cancelled.[/dim]")
         return
 
-    code = scaffold_skill(cfg.name, mode, overwrite=False)
+    code = scaffold_skill(cfg.name, mode, overwrite=overwrite)
     if code == 0:
         console.print("[green]Done.[/green]")
 
@@ -151,6 +237,10 @@ def run_menu() -> None:
                 value="install",
             ),
             questionary.Choice(
+                "Install an agent  (Claude / GitHub Copilot · local / global)",
+                value="install-agent",
+            ),
+            questionary.Choice(
                 "Create a new skill  (empty boilerplate)", value="scaffold"
             ),
             questionary.Choice("Quit", value="quit"),
@@ -161,5 +251,7 @@ def run_menu() -> None:
         raise SystemExit(0)
     elif choice == "install":
         _menu_install()
+    elif choice == "install-agent":
+        _menu_install_agent()
     else:
         _menu_scaffold()

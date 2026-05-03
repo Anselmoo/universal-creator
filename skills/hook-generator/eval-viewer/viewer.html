@@ -5,39 +5,43 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Eval Review</title>
+    <meta name="theme-color" content="#1d2638" />
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='14' y='18' width='36' height='28' rx='10' fill='%231d2638'/%3E%3Ccircle cx='26' cy='32' r='4' fill='%237dd3fc'/%3E%3Ccircle cx='38' cy='32' r='4' fill='%237dd3fc'/%3E%3Crect x='24' y='42' width='16' height='3' rx='1.5' fill='%23f8fafc'/%3E%3Crect x='30' y='10' width='4' height='10' rx='2' fill='%235b6cff'/%3E%3Ccircle cx='32' cy='8' r='4' fill='%235b6cff'/%3E%3C/svg%3E" />
     <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"
         integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT"
         crossorigin="anonymous"></script>
     <style>
-        /* ---- GitHub Primer design tokens ---- */
+        /* ---- Agent Console design tokens ---- */
         :root {
-            --bg: #f6f8fa;
+            --bg: #f4f7fb;
             --surface: #ffffff;
-            --surface-secondary: #f6f8fa;
-            --border: #d0d7de;
-            --border-muted: #d8dee4;
-            --text: #1f2328;
-            --text-muted: #636c76;
-            --text-placeholder: #8c959f;
-            --accent: #0969da;
-            --accent-hover: #0550ae;
-            --accent-muted: #ddf4ff;
-            --accent-emphasis: #0550ae;
-            --header-bg: #24292f;
-            --header-text: #ffffff;
-            --header-text-muted: #8b949e;
-            --green: #1a7f37;
-            --green-bg: #dafbe1;
-            --green-text: #116329;
-            --red: #d1242f;
-            --red-bg: #ffebe9;
-            --red-text: #a40e26;
-            --yellow: #9a6700;
-            --yellow-bg: #fff8c5;
-            --orange: #bc4c00;
-            --orange-bg: #fff1e5;
-            --shadow-sm: 0 1px 0 rgba(31, 35, 40, 0.04);
-            --shadow-md: 0 3px 6px rgba(140, 149, 159, 0.15);
+            --surface-secondary: #f7faff;
+            --border: #d7e0ee;
+            --border-muted: #e5ebf5;
+            --text: #162033;
+            --text-muted: #5d6b82;
+            --text-placeholder: #8a96ab;
+            --accent: #5b6cff;
+            --accent-hover: #4959e6;
+            --accent-muted: #e7ebff;
+            --accent-emphasis: #3f51c9;
+            --accent-rgb: 91, 108, 255;
+            --header-bg: #1d2638;
+            --header-text: #f7f9ff;
+            --header-text-muted: #ced8ef;
+            --green: #1f8a5b;
+            --green-bg: #def7ea;
+            --green-text: #155d3e;
+            --red: #cf3c55;
+            --red-bg: #ffe7eb;
+            --red-text: #97253b;
+            --yellow: #8a6400;
+            --yellow-bg: #fff4cc;
+            --orange: #ff9068;
+            --orange-bg: #fff1e8;
+            --shadow-sm: 0 10px 30px rgba(27, 39, 60, 0.08);
+            --shadow-md: 0 18px 45px rgba(27, 39, 60, 0.14);
             --radius: 6px;
             --radius-lg: 8px;
         }
@@ -52,17 +56,19 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-            background: var(--bg);
+            background:
+                radial-gradient(circle at top, rgba(var(--accent-rgb), 0.12), transparent 32%),
+                var(--bg);
             color: var(--text);
             font-size: 14px;
             line-height: 1.5;
             min-height: 100vh;
         }
 
-        /* ---- GitHub-style header ---- */
+        /* ---- Agent console header ---- */
         .site-header {
-            background: var(--header-bg);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, var(--header-bg), #243454 58%, #30526b 100%);
+            border-bottom: 1px solid rgba(216, 231, 255, 0.14);
             padding: 0 24px;
             height: 56px;
             display: flex;
@@ -74,21 +80,33 @@
         }
 
         .site-header-logo {
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            color: var(--header-text);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 12px;
             text-decoration: none;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
         }
 
         .site-header-logo svg {
-            fill: var(--header-text);
             flex-shrink: 0;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 3.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .site-header-divider {
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 18px;
-            font-weight: 300;
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
             user-select: none;
         }
 
@@ -100,20 +118,21 @@
         }
 
         .skill-badge {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(125, 211, 252, 0.12);
+            border: 1px solid rgba(191, 219, 254, 0.22);
             border-radius: 20px;
-            padding: 2px 10px;
+            padding: 4px 10px;
             font-size: 12px;
-            font-weight: 500;
-            color: var(--header-text-muted);
+            font-weight: 600;
+            color: var(--header-text);
             display: flex;
             align-items: center;
             gap: 5px;
         }
 
         .skill-badge svg {
-            fill: var(--header-text-muted);
+            fill: currentColor;
+            opacity: 0.85;
         }
 
         #skill-name {
@@ -396,7 +415,7 @@
         }
 
         .output-file-header:hover {
-            background: #eaeef2;
+            background: var(--surface-secondary);
         }
 
         .output-file-name {
@@ -485,7 +504,7 @@
         .feedback-textarea:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.12);
+            box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.14);
         }
 
         .feedback-textarea::placeholder {
@@ -551,7 +570,7 @@
         }
 
         .benchmark-table tr.benchmark-row-with {
-            background: rgba(9, 105, 218, 0.05);
+            background: rgba(var(--accent-rgb), 0.06);
         }
 
         .benchmark-table tr.benchmark-row-without {
@@ -559,7 +578,7 @@
         }
 
         .benchmark-table tr.benchmark-row-with:hover {
-            background: rgba(9, 105, 218, 0.1);
+            background: rgba(var(--accent-rgb), 0.12);
         }
 
         .benchmark-table tr.benchmark-row-without:hover {
@@ -572,7 +591,7 @@
         }
 
         .benchmark-table tr.benchmark-row-avg.benchmark-row-with {
-            background: rgba(9, 105, 218, 0.1);
+            background: rgba(var(--accent-rgb), 0.12);
         }
 
         .benchmark-table tr.benchmark-row-avg.benchmark-row-without {
@@ -704,22 +723,24 @@
 
 <body>
 
-    <!-- GitHub-style header -->
+    <!-- Agent console header -->
     <header class="site-header">
-        <a class="site-header-logo" href="#" aria-label="Eval viewer">
-            <!-- terminal icon (neutral, Octicons Apache-2.0) -->
-            <svg height="24" width="24" viewBox="0 0 16 16" aria-hidden="true">
-                <path
-                    d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v9.5A1.75 1.75 0 0 1 14.25 13H1.75A1.75 1.75 0 0 1 0 12.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25ZM3.72 4.72a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.749.749 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L5.44 7.5 3.72 5.78a.75.75 0 0 1 0-1.06ZM8 10.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z" />
+        <a class="site-header-logo" href="#" aria-label="Agent Console home">
+            <svg height="24" width="24" viewBox="0 0 64 64" aria-hidden="true">
+                <rect x="14" y="18" width="36" height="28" rx="10"></rect>
+                <path d="M32 10v8"></path>
+                <path d="M24 39h16"></path>
+                <circle cx="26" cy="31" r="2"></circle>
+                <circle cx="38" cy="31" r="2"></circle>
+                <circle cx="32" cy="8" r="2"></circle>
             </svg>
         </a>
-        <span class="site-header-divider">/</span>
+        <span class="site-header-divider">•</span>
         <span class="site-header-title">Eval Review</span>
         <div class="skill-badge">
-            <!-- git-branch octicon -->
             <svg height="12" width="12" viewBox="0 0 16 16" aria-hidden="true">
                 <path
-                    d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z" />
+                    d="M2.75 2h3.5c.414 0 .75.336.75.75v3.5a.75.75 0 0 1-.75.75h-3.5A.75.75 0 0 1 2 6.25v-3.5C2 2.336 2.336 2 2.75 2Zm7 0h3.5c.414 0 .75.336.75.75v3.5a.75.75 0 0 1-.75.75h-3.5A.75.75 0 0 1 9 6.25v-3.5c0-.414.336-.75.75-.75Zm-7 7h3.5c.414 0 .75.336.75.75v3.5a.75.75 0 0 1-.75.75h-3.5A.75.75 0 0 1 2 13.25v-3.5c0-.414.336-.75.75-.75Zm7 0h3.5c.414 0 .75.336.75.75v3.5a.75.75 0 0 1-.75.75h-3.5A.75.75 0 0 1 9 13.25v-3.5c0-.414.336-.75.75-.75Z" />
             </svg>
             <span id="skill-name">loading…</span>
         </div>

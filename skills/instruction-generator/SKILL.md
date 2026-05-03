@@ -10,6 +10,7 @@ description: >-
   and optional extended variants for fragile workflows. DO NOT USE for
   one-shot prompts (use prompt-generator); for custom agent role definitions
   (use agent-generator); for Claude Code lifecycle hooks (use hook-generator).
+license: "MIT"
 ---
 
 # Instruction Generator

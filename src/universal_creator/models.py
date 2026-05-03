@@ -15,6 +15,13 @@ class SkillInstallConfig(BaseModel):
     overwrite: bool = False
 
 
+class AgentInstallConfig(BaseModel):
+    agent: str
+    host: Literal["claude", "copilot"]
+    scope: Literal["local", "global"]
+    overwrite: bool = False
+
+
 class ScaffoldConfig(BaseModel):
     name: str
     mode: Literal["empty", "boilerplate"] = "empty"
