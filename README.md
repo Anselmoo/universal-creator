@@ -191,7 +191,7 @@ uvx universal-creator menu
 Pinning a version is also supported:
 
 ```bash
-uvx universal-creator==0.1.3 --help
+uvx universal-creator==0.1.4 --help
 ```
 
 You can also load them manually:

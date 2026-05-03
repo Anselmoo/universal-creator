@@ -1,6 +1,6 @@
 [project]
 name = "universal-creator"
-version = "0.1.3"
+version = "0.1.4"
 description = "Skill scaffolding and artifact generation toolkit for VS Code Copilot / Claude agents"
 readme = "README.md"
 license = { text = "MIT" }

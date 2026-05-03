@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from universal_creator.install import install_skill, resolve_target
+from universal_creator.resources import list_bundled_agents
 
 
 class InstallTargetResolutionTests(unittest.TestCase):
@@ -85,6 +86,20 @@ class InstallTargetResolutionTests(unittest.TestCase):
             self.assertEqual(result, 0)
             self.assertFalse((dest / "old.txt").exists())
             self.assertEqual((dest / "SKILL.md").read_text(), "new skill")
+
+    def test_list_bundled_agents_accepts_distribution_root_layout(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "primitive-selector.agent.md").write_text(
+                "---\nname: primitive-selector\n---\n"
+            )
+            (root / "README.txt").write_text("ignore me")
+
+            with patch(
+                "universal_creator.resources._candidate_agent_roots",
+                return_value=[root],
+            ):
+                self.assertEqual(list_bundled_agents(), ["primitive-selector"])
 
 
 if __name__ == "__main__":

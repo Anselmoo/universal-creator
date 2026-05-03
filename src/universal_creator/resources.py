@@ -104,6 +104,10 @@ def _candidate_agent_roots() -> list[Path]:
 
         with as_file(files("universal_creator")) as package_dir:
             pkg_path = Path(package_dir)
+            # uv_build currently installs standalone bundled agent files into the
+            # distribution root (site-packages), while editable installs keep
+            # them in the repository-level ``agents/`` directory.
+            candidates.append(pkg_path.parent)
             candidates.append(pkg_path.parent / "agents")
     except Exception:
         pass
