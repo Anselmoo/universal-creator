@@ -16,14 +16,14 @@ from __future__ import annotations
 import subprocess
 import sys
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated, Literal, Optional, cast
 
 import typer
 from pydantic import ValidationError
 
 app = typer.Typer(
     name="universal-creator",
-    help="Skill scaffolding and artifact generation for VS Code Copilot / Claude agents.",
+    help="Skill scaffolding and artifact generation for VS Code Copilot / Claude / Gemini / Codex agents.",
     invoke_without_command=True,
     no_args_is_help=False,
     rich_markup_mode="rich",
@@ -74,7 +74,10 @@ def cmd_new_skill(
 
     try:
         cfg = ScaffoldConfig(
-            name=name, mode=mode, output_dir=output_dir, overwrite=overwrite
+            name=name,
+            mode=cast(Literal["empty", "boilerplate"], mode),
+            output_dir=output_dir,
+            overwrite=overwrite,
         )
     except ValidationError as exc:
         typer.echo(f"Error: {exc.errors()[0]['msg']}", err=True)
@@ -89,17 +92,22 @@ def cmd_new_skill(
 @app.command("install")
 def cmd_install(
     skill: Annotated[str, typer.Option("--skill", "-s", help="Skill name to install")],
-    host: Annotated[str, typer.Option("--host", help="claude | copilot")] = "copilot",
+    host: Annotated[
+        str, typer.Option("--host", help="claude | copilot | gemini | codex")
+    ] = "copilot",
     scope: Annotated[str, typer.Option("--scope", help="local | global")] = "local",
     overwrite: Annotated[bool, typer.Option("--overwrite/--no-overwrite")] = False,
 ) -> None:
-    """Install a bundled skill to Claude or GitHub Copilot (local or global)."""
+    """Install a bundled skill to Claude, Copilot, Gemini, or Codex."""
     from universal_creator.install import install_skill
     from universal_creator.models import SkillInstallConfig
 
     try:
         cfg = SkillInstallConfig(
-            skill=skill, host=host, scope=scope, overwrite=overwrite
+            skill=skill,
+            host=cast(Literal["claude", "copilot", "gemini", "codex"], host),
+            scope=cast(Literal["local", "global"], scope),
+            overwrite=overwrite,
         )
     except ValidationError as exc:
         typer.echo(f"Error: {exc.errors()[0]['msg']}", err=True)
@@ -116,17 +124,22 @@ def cmd_install(
 @app.command("install-agent")
 def cmd_install_agent(
     agent: Annotated[str, typer.Option("--agent", "-a", help="Agent name to install")],
-    host: Annotated[str, typer.Option("--host", help="claude | copilot")] = "claude",
+    host: Annotated[
+        str, typer.Option("--host", help="claude | copilot | gemini | codex")
+    ] = "claude",
     scope: Annotated[str, typer.Option("--scope", help="local | global")] = "local",
     overwrite: Annotated[bool, typer.Option("--overwrite/--no-overwrite")] = False,
 ) -> None:
-    """Install a bundled agent definition to Claude or GitHub Copilot (local or global)."""
+    """Install a bundled agent definition to Claude, Copilot, Gemini, or Codex."""
     from universal_creator.install import install_agent
     from universal_creator.models import AgentInstallConfig
 
     try:
         cfg = AgentInstallConfig(
-            agent=agent, host=host, scope=scope, overwrite=overwrite
+            agent=agent,
+            host=cast(Literal["claude", "copilot", "gemini", "codex"], host),
+            scope=cast(Literal["local", "global"], scope),
+            overwrite=overwrite,
         )
     except ValidationError as exc:
         typer.echo(f"Error: {exc.errors()[0]['msg']}", err=True)
@@ -196,7 +209,10 @@ def cmd_eval(
 def cmd_list(
     installed: Annotated[
         Optional[str],
-        typer.Option("--installed", help="Show installed skills for: claude | copilot"),
+        typer.Option(
+            "--installed",
+            help="Show installed skills for: claude | copilot | gemini | codex",
+        ),
     ] = None,
 ) -> None:
     """List bundled skills, or skills already installed for a given host."""
@@ -204,8 +220,11 @@ def cmd_list(
 
     if installed:
         host = installed.lower()
-        if host not in ("claude", "copilot"):
-            typer.echo("Error: --installed must be 'claude' or 'copilot'", err=True)
+        if host not in ("claude", "copilot", "gemini", "codex"):
+            typer.echo(
+                "Error: --installed must be 'claude', 'copilot', 'gemini', or 'codex'",
+                err=True,
+            )
             raise typer.Exit(1)
         from universal_creator.install import resolve_target
 
@@ -217,9 +236,15 @@ def cmd_list(
                 else []
             )
             if scope == "global":
-                label = f"~/.{host}/skills/"
+                label = (
+                    "~/.agents/skills/"
+                    if host in ("gemini", "codex")
+                    else f"~/.{host}/skills/"
+                )
             elif host == "copilot":
                 label = ".github/skills/"
+            elif host in ("gemini", "codex"):
+                label = ".agents/skills/"
             else:
                 label = f".{host}/skills/"
             typer.echo(f"\n{label}")

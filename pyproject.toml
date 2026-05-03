@@ -1,6 +1,6 @@
 [project]
 name = "universal-creator"
-version = "0.1.4"
+version = "0.1.5"
 description = "Skill scaffolding and artifact generation toolkit for VS Code Copilot / Claude agents"
 readme = "README.md"
 license = { text = "MIT" }
@@ -45,7 +45,7 @@ Issues = "https://github.com/Anselmoo/universal-creator/issues"
 universal-creator = "universal_creator.cli:main"
 
 [dependency-groups]
-dev = ["poethepoet>=0.33", "ruff>=0.15"]
+dev = ["poethepoet>=0.33", "ruff>=0.15", "pytest>=8.0", "pytest-cov>=5.0"]
 
 [build-system]
 requires = ["uv_build>=0.7.19,<0.8.0"]
@@ -120,12 +120,20 @@ help = "Run evals for a skill (--skill NAME)"
 cmd = "python -m universal_creator eval"
 
 [tool.poe.tasks.install-skill]
-help = "Install a bundled skill to Claude/Copilot (--skill NAME --host claude|copilot --scope local|global)"
+help = "Install a bundled skill to Claude/Copilot/Gemini/Codex (--skill NAME --host claude|copilot|gemini|codex --scope local|global)"
 cmd = "python -m universal_creator install"
 
 [tool.poe.tasks.install-agent]
-help = "Install a bundled agent to Claude/Copilot (--agent NAME --host claude|copilot --scope local|global)"
+help = "Install a bundled agent to Claude/Copilot/Gemini/Codex (--agent NAME --host claude|copilot|gemini|codex --scope local|global)"
 cmd = "python -m universal_creator install-agent"
+
+[tool.poe.tasks.test]
+help = "Run test suite with pytest"
+cmd = "pytest"
+
+[tool.poe.tasks.test-cov]
+help = "Run pytest with coverage report"
+cmd = "pytest --cov=src/universal_creator --cov-report=term-missing"
 
 [tool.poe.tasks.menu]
 help = "Interactive skill menu (install or scaffold)"
@@ -157,6 +165,10 @@ pattern = '("version":\s*")(\d+\.\d+\.\d+)(")'
 languages = ["python"]
 warn_days = 180
 error_days = 0
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
 
 # ── ruff ─────────────────────────────────────────────────────────────────────
 

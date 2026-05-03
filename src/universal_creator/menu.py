@@ -68,7 +68,8 @@ def _menu_install() -> None:
 
     skill = _ask("Select skill", available)
     host = cast(
-        Literal["claude", "copilot"], _ask("Install for", ["claude", "copilot"])
+        Literal["claude", "copilot", "gemini", "codex"],
+        _ask("Install for", ["claude", "copilot", "gemini", "codex"]),
     )
     scope = _ask(
         "Scope",
@@ -85,11 +86,18 @@ def _menu_install() -> None:
         console.print(f"[red]Validation error:[/red] {exc}")
         return
 
-    dest_label = (
-        f"[dim].{host}/skills/{skill}/[/dim]"
-        if scope_val == "local"
-        else f"[dim]~/.{host}/skills/{skill}/[/dim]"
-    )
+    if host in ("gemini", "codex"):
+        dest_label = (
+            f"[dim].agents/skills/{skill}/[/dim]"
+            if scope_val == "local"
+            else f"[dim]~/.agents/skills/{skill}/[/dim]"
+        )
+    else:
+        dest_label = (
+            f"[dim].{host}/skills/{skill}/[/dim]"
+            if scope_val == "local"
+            else f"[dim]~/.{host}/skills/{skill}/[/dim]"
+        )
     dest = resolve_target(cfg.host, cfg.scope, cwd=Path.cwd()) / cfg.skill
     console.print(f"\nInstall [bold]{skill}[/bold] → {dest_label}")
     overwrite = False
@@ -126,7 +134,8 @@ def _menu_install_agent() -> None:
 
     agent = _ask("Select agent", available)
     host = cast(
-        Literal["claude", "copilot"], _ask("Install for", ["claude", "copilot"])
+        Literal["claude", "copilot", "gemini", "codex"],
+        _ask("Install for", ["claude", "copilot", "gemini", "codex"]),
     )
     scope = _ask(
         "Scope",
@@ -143,11 +152,18 @@ def _menu_install_agent() -> None:
         console.print(f"[red]Validation error:[/red] {exc}")
         return
 
-    dest_label = (
-        f"[dim].{host}/agents/{agent}.agent.md[/dim]"
-        if scope_val == "local"
-        else f"[dim]~/.{host}/agents/{agent}.agent.md[/dim]"
-    )
+    if host in ("gemini", "codex"):
+        dest_label = (
+            f"[dim].agents/agents/{agent}.agent.md[/dim]"
+            if scope_val == "local"
+            else f"[dim]~/.agents/agents/{agent}.agent.md[/dim]"
+        )
+    else:
+        dest_label = (
+            f"[dim].{host}/agents/{agent}.agent.md[/dim]"
+            if scope_val == "local"
+            else f"[dim]~/.{host}/agents/{agent}.agent.md[/dim]"
+        )
     dest = (
         resolve_agent_target(cfg.host, cfg.scope, cwd=Path.cwd())
         / f"{cfg.agent}.agent.md"
@@ -233,11 +249,11 @@ def run_menu() -> None:
         "What would you like to do?",
         choices=[
             questionary.Choice(
-                "Install a skill  (Claude / GitHub Copilot · local / global)",
+                "Install a skill  (Claude / GitHub Copilot / Gemini / Codex · local / global)",
                 value="install",
             ),
             questionary.Choice(
-                "Install an agent  (Claude / GitHub Copilot · local / global)",
+                "Install an agent  (Claude / GitHub Copilot / Gemini / Codex · local / global)",
                 value="install-agent",
             ),
             questionary.Choice(

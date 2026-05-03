@@ -54,7 +54,3 @@ class ResourcesResolutionTests(unittest.TestCase):
                 with self.assertRaises(SystemExit) as exc:
                     resources.get_bundled_skills_dir()
                 self.assertEqual(exc.exception.code, 1)
-
-
-if __name__ == "__main__":
-    unittest.main()

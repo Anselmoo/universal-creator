@@ -1,6 +1,6 @@
 # universal-creator
 
-A collection of four **generator skills** for building Claude-native AI artifacts: hooks, agents, instructions, and prompts.
+A collection of four **generator skills** for building AI artifacts for Claude, GitHub Copilot, Gemini, and Codex: hooks, agents, instructions, and prompts.
 
 Each skill lives in `skills/<name>/` with a `SKILL.md` file that Claude loads automatically when the skill is triggered.
 
@@ -173,11 +173,13 @@ For local GitHub Copilot workflows in this repository, skills are installed unde
 | Built-in sub-agents | user-defined | `default`, `worker`, `explorer` |
 | Implicit skill invocation | configurable | disable with `allow_implicit_invocation: false` |
 
+Gemini CLI also supports the interoperable `.agents/skills/<name>/` alias, so `universal-creator install --host gemini ...` and `universal-creator install --host codex ...` both install skills into the shared agent-skills layout for local and global scopes.
+
 ---
 
 ## Usage
 
-These skills are designed for use with Copilot Chat or Claude's skill-loading system. When you describe a task matching a skill's trigger keywords, Claude loads the relevant `SKILL.md` and follows its workflow.
+These skills are designed for use with Copilot Chat, Claude's skill-loading system, Gemini CLI, or Codex. When you describe a task matching a skill's trigger keywords, the relevant `SKILL.md` is loaded and followed by the host tool.
 
 ### Run from PyPI with `uvx`
 
@@ -191,7 +193,7 @@ uvx universal-creator menu
 Pinning a version is also supported:
 
 ```bash
-uvx universal-creator==0.1.4 --help
+uvx universal-creator==0.1.5 --help
 ```
 
 You can also load them manually:

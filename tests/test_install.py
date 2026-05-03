@@ -5,7 +5,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from universal_creator.install import install_skill, resolve_target
+from universal_creator.install import (
+    install_skill,
+    resolve_agent_target,
+    resolve_target,
+)
 from universal_creator.resources import list_bundled_agents
 
 
@@ -16,11 +20,37 @@ class InstallTargetResolutionTests(unittest.TestCase):
             target = resolve_target("copilot", "local", cwd)
             self.assertEqual(target, (cwd / ".github" / "skills").resolve())
 
+    def test_resolve_target_gemini_local_uses_agents_alias(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cwd = Path(tmp)
+            target = resolve_target("gemini", "local", cwd)
+            self.assertEqual(target, (cwd / ".agents" / "skills").resolve())
+
+    def test_resolve_target_codex_global_uses_agents_alias(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            with patch("universal_creator.install.Path.home", return_value=home):
+                target = resolve_target("codex", "global")
+            self.assertEqual(target, (home / ".agents" / "skills").resolve())
+
     def test_resolve_target_claude_local_still_uses_claude_skills(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             cwd = Path(tmp)
             target = resolve_target("claude", "local", cwd)
             self.assertEqual(target, (cwd / ".claude" / "skills").resolve())
+
+    def test_resolve_agent_target_gemini_local_uses_agents_alias(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cwd = Path(tmp)
+            target = resolve_agent_target("gemini", "local", cwd)
+            self.assertEqual(target, (cwd / ".agents" / "agents").resolve())
+
+    def test_resolve_agent_target_codex_global_uses_agents_alias(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            with patch("universal_creator.install.Path.home", return_value=home):
+                target = resolve_agent_target("codex", "global")
+            self.assertEqual(target, (home / ".agents" / "agents").resolve())
 
     def test_install_skill_returns_error_when_destination_exists_without_overwrite(
         self,
@@ -100,7 +130,3 @@ class InstallTargetResolutionTests(unittest.TestCase):
                 return_value=[root],
             ):
                 self.assertEqual(list_bundled_agents(), ["primitive-selector"])
-
-
-if __name__ == "__main__":
-    unittest.main()

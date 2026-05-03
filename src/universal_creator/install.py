@@ -6,11 +6,19 @@ Hosts and their target paths:
         claude  · global  → ~/.claude/skills/<name>/
         copilot · local   → <cwd>/.github/skills/<name>/
         copilot · global  → ~/.copilot/skills/<name>/
+        gemini  · local   → <cwd>/.agents/skills/<name>/
+        gemini  · global  → ~/.agents/skills/<name>/
+        codex   · local   → <cwd>/.agents/skills/<name>/
+        codex   · global  → ~/.agents/skills/<name>/
     Agents:
         claude  · local   → <cwd>/.claude/agents/<name>.agent.md
         claude  · global  → ~/.claude/agents/<name>.agent.md
         copilot · local   → <cwd>/.github/agents/<name>.agent.md
         copilot · global  → ~/.copilot/agents/<name>.agent.md
+        gemini  · local   → <cwd>/.agents/agents/<name>.agent.md
+        gemini  · global  → ~/.agents/agents/<name>.agent.md
+        codex   · local   → <cwd>/.agents/agents/<name>.agent.md
+        codex   · global  → ~/.agents/agents/<name>.agent.md
 """
 
 from __future__ import annotations
@@ -26,32 +34,60 @@ from universal_creator.resources import (
     list_bundled_skills,
 )
 
-_HOST_PATHS: dict[str, dict[str, Path]] = {
-    "claude": {
-        "local": Path(".claude") / "skills",
-        "global": Path.home() / ".claude" / "skills",
-    },
-    "copilot": {
-        "local": Path(".github") / "skills",
-        "global": Path.home() / ".copilot" / "skills",
-    },
-}
 
-_AGENT_HOST_PATHS: dict[str, dict[str, Path]] = {
-    "claude": {
-        "local": Path(".claude") / "agents",
-        "global": Path.home() / ".claude" / "agents",
-    },
-    "copilot": {
-        "local": Path(".github") / "agents",
-        "global": Path.home() / ".copilot" / "agents",
-    },
-}
+def _host_paths() -> dict[str, dict[str, Path]]:
+    """Return host → scope path mapping for skill installation.
+
+    ``Path.home()`` is resolved at call time so tests can patch it safely.
+    """
+    return {
+        "claude": {
+            "local": Path(".claude") / "skills",
+            "global": Path.home() / ".claude" / "skills",
+        },
+        "copilot": {
+            "local": Path(".github") / "skills",
+            "global": Path.home() / ".copilot" / "skills",
+        },
+        "gemini": {
+            "local": Path(".agents") / "skills",
+            "global": Path.home() / ".agents" / "skills",
+        },
+        "codex": {
+            "local": Path(".agents") / "skills",
+            "global": Path.home() / ".agents" / "skills",
+        },
+    }
+
+
+def _agent_host_paths() -> dict[str, dict[str, Path]]:
+    """Return host → scope path mapping for agent installation.
+
+    ``Path.home()`` is resolved at call time so tests can patch it safely.
+    """
+    return {
+        "claude": {
+            "local": Path(".claude") / "agents",
+            "global": Path.home() / ".claude" / "agents",
+        },
+        "copilot": {
+            "local": Path(".github") / "agents",
+            "global": Path.home() / ".copilot" / "agents",
+        },
+        "gemini": {
+            "local": Path(".agents") / "agents",
+            "global": Path.home() / ".agents" / "agents",
+        },
+        "codex": {
+            "local": Path(".agents") / "agents",
+            "global": Path.home() / ".agents" / "agents",
+        },
+    }
 
 
 def resolve_target(host: str, scope: str, cwd: Path | None = None) -> Path:
     """Return the absolute target directory for the given host + scope."""
-    base = _HOST_PATHS[host][scope]
+    base = _host_paths()[host][scope]
     if scope == "local" and cwd:
         base = cwd / base
     return base.resolve()
@@ -59,7 +95,7 @@ def resolve_target(host: str, scope: str, cwd: Path | None = None) -> Path:
 
 def resolve_agent_target(host: str, scope: str, cwd: Path | None = None) -> Path:
     """Return the absolute agents directory for the given host + scope."""
-    base = _AGENT_HOST_PATHS[host][scope]
+    base = _agent_host_paths()[host][scope]
     if scope == "local" and cwd:
         base = cwd / base
     return base.resolve()

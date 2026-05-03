@@ -10,14 +10,14 @@ from pydantic import BaseModel, field_validator
 
 class SkillInstallConfig(BaseModel):
     skill: str
-    host: Literal["claude", "copilot"]
+    host: Literal["claude", "copilot", "gemini", "codex"]
     scope: Literal["local", "global"]
     overwrite: bool = False
 
 
 class AgentInstallConfig(BaseModel):
     agent: str
-    host: Literal["claude", "copilot"]
+    host: Literal["claude", "copilot", "gemini", "codex"]
     scope: Literal["local", "global"]
     overwrite: bool = False
 
