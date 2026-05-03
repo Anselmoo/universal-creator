@@ -1,6 +1,6 @@
 [project]
 name = "universal-creator"
-version = "0.1.1"
+version = "0.1.2"
 description = "Skill scaffolding and artifact generation toolkit for VS Code Copilot / Claude agents"
 requires-python = ">=3.13"
 dependencies = [
@@ -111,6 +111,10 @@ pattern = '(uvx universal-creator==)(\d+\.\d+\.\d+)( --help)'
 [[tool.rrt.pin_targets]]
 path = "src/universal_creator/_templates/skill/SKILL.md.j2"
 pattern = '(version:\s*")(\d+\.\d+\.\d+)(")'
+
+[[tool.rrt.pin_targets]]
+path = "src/universal_creator/_templates/skill/evals/evals.json.j2"
+pattern = '("version":\s*")(\d+\.\d+\.\d+)(")'
 
 [tool.rrt.eol]
 languages = ["python"]
