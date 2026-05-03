@@ -160,6 +160,8 @@ src/
 
 These skills follow the [agentskills.io](https://agentskills.io) open standard: the same `SKILL.md` format works with both Claude Code and OpenAI Codex. Only the storage path differs.
 
+For local GitHub Copilot workflows in this repository, skills are installed under `.github/skills/<name>/`.
+
 | Feature | Claude Code | OpenAI Codex |
 |---------|------------|--------------|
 | Skill format | `SKILL.md` (Markdown) | `SKILL.md` (same format) |
@@ -189,7 +191,7 @@ uvx universal-creator menu
 Pinning a version is also supported:
 
 ```bash
-uvx universal-creator==0.1.0 --help
+uvx universal-creator==0.1.1 --help
 ```
 
 You can also load them manually:

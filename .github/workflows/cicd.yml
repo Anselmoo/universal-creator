@@ -60,6 +60,9 @@ jobs:
       - name: Skill validation
         run: uv run python scripts/run_validations.py
 
+      - name: Release policy doctor
+        run: uv run poe release-policy
+
   test:
     name: Tests (Python ${{ matrix.python-version }})
     needs: lint

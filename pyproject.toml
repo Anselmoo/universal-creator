@@ -44,7 +44,11 @@ cmd = "ruff format skills/ scripts/ src/"
 
 [tool.poe.tasks.check]
 help = "Run lint then validate-all (pre-push gate)"
-sequence = ["lint", "validate-all"]
+sequence = ["lint", "validate-all", "release-policy"]
+
+[tool.poe.tasks.release-policy]
+help = "Validate release config, version targets, and runtime minimum-version policy"
+cmd = "uvx --from 'repo-release-tools>=1.1.0' rrt doctor"
 
 [tool.poe.tasks.validate-hook]
 help = "Validate hook-generator output files in a path (pass -- <path> to override CWD)"
@@ -89,6 +93,29 @@ cmd = "python -m universal_creator install"
 [tool.poe.tasks.menu]
 help = "Interactive skill menu (install or scaffold)"
 cmd = "python -m universal_creator menu"
+
+[tool.rrt]
+
+[[tool.rrt.version_targets]]
+path = "pyproject.toml"
+kind = "pep621"
+
+[[tool.rrt.version_targets]]
+path = "src/universal_creator/__init__.py"
+kind = "python_version"
+
+[[tool.rrt.pin_targets]]
+path = "README.md"
+pattern = '(uvx universal-creator==)(\d+\.\d+\.\d+)( --help)'
+
+[[tool.rrt.pin_targets]]
+path = "src/universal_creator/_templates/skill/SKILL.md.j2"
+pattern = '(version:\s*")(\d+\.\d+\.\d+)(")'
+
+[tool.rrt.eol]
+languages = ["python"]
+warn_days = 180
+error_days = 0
 
 # ── ruff ─────────────────────────────────────────────────────────────────────
 

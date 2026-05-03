@@ -3,7 +3,7 @@
 Hosts and their target paths:
     claude  · local   → <cwd>/.claude/skills/<name>/
     claude  · global  → ~/.claude/skills/<name>/
-    copilot · local   → <cwd>/.copilot/skills/<name>/
+    copilot · local   → <cwd>/.github/skills/<name>/
     copilot · global  → ~/.copilot/skills/<name>/
 """
 
@@ -21,7 +21,7 @@ _HOST_PATHS: dict[str, dict[str, Path]] = {
         "global": Path.home() / ".claude" / "skills",
     },
     "copilot": {
-        "local": Path(".copilot") / "skills",
+        "local": Path(".github") / "skills",
         "global": Path.home() / ".copilot" / "skills",
     },
 }

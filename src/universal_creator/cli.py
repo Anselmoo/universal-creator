@@ -189,7 +189,12 @@ def cmd_list(
                 if target.is_dir()
                 else []
             )
-            label = f"~/.{host}/skills/" if scope == "global" else f".{host}/skills/"
+            if scope == "global":
+                label = f"~/.{host}/skills/"
+            elif host == "copilot":
+                label = ".github/skills/"
+            else:
+                label = f".{host}/skills/"
             typer.echo(f"\n{label}")
             for s in skills:
                 typer.echo(f"  {s}")
