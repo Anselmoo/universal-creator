@@ -61,16 +61,58 @@ def cmd_new_skill(
     mode: Annotated[
         str, typer.Option("--mode", "-m", help="empty | boilerplate")
     ] = "empty",
+    host: Annotated[
+        str, typer.Option("--host", help="claude | copilot | gemini | codex")
+    ] = "claude",
+    scope: Annotated[str, typer.Option("--scope", help="local | global")] = "local",
     output_dir: Annotated[
-        str, typer.Option("--output-dir", help="Parent dir (default: skills/)")
-    ] = "skills",
+        Optional[str], typer.Option("--output-dir", help="Parent dir (default: host-specific)")
+    ] = None,
+    ask_location: Annotated[
+        bool, typer.Option("--ask-location/--no-ask-location", help="Ask where to write the skill interactively")
+    ] = False,
+    remember: Annotated[
+        bool, typer.Option("--remember/--no-remember", help="Remember chosen location for next time")
+    ] = False,
     overwrite: Annotated[
         bool, typer.Option("--overwrite/--no-overwrite", help="Replace existing skill")
     ] = False,
 ) -> None:
-    """Scaffold a new skill directory."""
+    """Scaffold a new skill directory. By default, writes to a host-appropriate repo-local path (e.g. .claude/skills/)."""
     from universal_creator.generate import scaffold_skill
     from universal_creator.models import ScaffoldConfig
+
+    # Determine default output_dir based on host/scope when not explicitly provided
+    if output_dir is None:
+        from universal_creator.install import get_default_skill_output_dir
+
+        default_path = get_default_skill_output_dir(host, scope, name)
+
+        # Interactive prompt when requested
+        if ask_location:
+            typer.echo("Choose where to write the new skill:")
+            opts = [str(default_path), str(default_path / "skills")]
+            for i, o in enumerate(opts, start=1):
+                typer.echo(f"  {i}. {o}")
+            choice = typer.prompt("Enter choice number (or custom path)")
+            # simple numeric selection
+            if choice.isdigit() and 1 <= int(choice) <= len(opts):
+                output_dir = opts[int(choice) - 1]
+            else:
+                output_dir = choice
+
+            if remember:
+                try:
+                    import json
+
+                    cfg_path = Path.home() / ".universal_creator_choices.json"
+                    data = {"last_output_dir": output_dir}
+                    cfg_path.write_text(json.dumps(data))
+                except Exception:
+                    typer.echo("Warning: failed to persist choice", err=True)
+        else:
+            # non-interactive default
+            output_dir = str(default_path)
 
     try:
         cfg = ScaffoldConfig(
@@ -83,7 +125,8 @@ def cmd_new_skill(
         typer.echo(f"Error: {exc.errors()[0]['msg']}", err=True)
         raise typer.Exit(1)
 
-    raise typer.Exit(scaffold_skill(cfg.name, cfg.mode, cfg.output_dir, cfg.overwrite))
+    # Pass host/scope through so scaffold_skill can derive host-aware defaults
+    raise typer.Exit(scaffold_skill(cfg.name, cfg.mode, cfg.output_dir, cfg.overwrite, host=host, scope=scope))
 
 
 # ── install ───────────────────────────────────────────────────────────────────

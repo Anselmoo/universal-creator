@@ -72,13 +72,34 @@ def _render_template(env: "Environment", template_path: str, ctx: dict) -> str:
 def scaffold_skill(
     name: str,
     mode: str = "empty",
-    output_dir: str = "skills",
+    output_dir: Optional[str] = None,
     overwrite: bool = False,
+    host: Optional[str] = None,
+    scope: str = "local",
 ) -> int:
     """Create a new skill directory under output_dir/name.
 
+    If output_dir is None and host is provided, derive a host-aware default
+    path (e.g. .claude/skills, .github/skills, .agents/skills) via
+    universal_creator.install.get_default_skill_output_dir.
+
     Returns 0 on success, 1 on error.
     """
+    # Determine actual output_dir when not provided
+    if output_dir is None:
+        if host:
+            try:
+                from universal_creator.install import get_default_skill_output_dir
+
+
+                default_path = get_default_skill_output_dir(host, scope, name)
+                output_dir = str(default_path)
+            except Exception:
+                # Fallback to legacy 'skills' when anything goes wrong
+                output_dir = "skills"
+        else:
+            output_dir = "skills"
+
     skill_dir = _REPO_ROOT / output_dir / name
 
     if skill_dir.exists():

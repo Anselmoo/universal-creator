@@ -85,6 +85,25 @@ def _agent_host_paths() -> dict[str, dict[str, Path]]:
     }
 
 
+def get_default_skill_output_dir(host: str, scope: str, name: str | None = None) -> Path:
+    """Return the default relative output directory for scaffolding a skill.
+
+    This centralizes the mapping used by CLI scaffolders so hosts agree on where
+    skills and host-specific instruction artifacts land.
+    ``name`` may be used to special-case instruction skills which belong under
+    .github/ (repository-level instructions).
+    """
+    host_l = host.lower()
+    if name and "instruction" in name.lower():
+        # Repository-level instructions live under .github/
+        return Path(".github")
+    if host_l == "copilot":
+        return Path(".github") / "skills"
+    if host_l in ("gemini", "codex"):
+        return Path(".agents") / "skills"
+    return Path(f".{host_l}") / "skills"
+
+
 def resolve_target(host: str, scope: str, cwd: Path | None = None) -> Path:
     """Return the absolute target directory for the given host + scope."""
     base = _host_paths()[host][scope]

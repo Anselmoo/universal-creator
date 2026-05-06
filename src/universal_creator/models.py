@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import BaseModel, field_validator
 
@@ -25,7 +25,7 @@ class AgentInstallConfig(BaseModel):
 class ScaffoldConfig(BaseModel):
     name: str
     mode: Literal["empty", "boilerplate"] = "empty"
-    output_dir: str = "skills"
+    output_dir: Optional[str] = "skills"
     overwrite: bool = False
 
     @field_validator("name")

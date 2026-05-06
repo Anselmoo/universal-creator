@@ -205,10 +205,18 @@ etc.) is the right choice. Always name the competing skills.
 
 ## Output format
 
-Deliver a complete `skills/<name>/` directory tree containing:
+Deliver a complete skill directory suitable for the target host. Preferred host-local locations are:
+
+- Claude (repo-local): `.claude/skills/<name>/` or global `~/.claude/skills/<name>/`
+- GitHub Copilot (repo-local): `.github/skills/<name>/` or global `~/.copilot/skills/<name>/`
+- Gemini / Codex (repo-local): `.agents/skills/<name>/` or global `~/.agents/skills/<name>/`
+
+Repository-level instruction artifacts may instead belong under `.github/` (e.g., `.github/<instructions...>`). If the consumer requires the legacy workspace layout, explicitly write to `./skills/<name>/` or `./skill/` only when the user or host requests it.
+
+Example on-disk tree (use host-appropriate parent dir instead of `skills/` when installing):
 
 ```
-skills/<name>/
+<host-specific-parent>/<name>/   # e.g. .claude/skills/my-skill or .github/skills/my-skill or .agents/skills/my-skill
 ├── SKILL.md                              # frontmatter + workflow body
 ├── requirements.txt                      # pyyaml>=6.0 + any domain deps
 ├── agents/
