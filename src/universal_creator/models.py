@@ -25,7 +25,7 @@ class AgentInstallConfig(BaseModel):
 class ScaffoldConfig(BaseModel):
     name: str
     mode: Literal["empty", "boilerplate"] = "empty"
-    output_dir: Optional[str] = "skills"
+    output_dir: str | None = "skills"
     overwrite: bool = False
 
     @field_validator("name")

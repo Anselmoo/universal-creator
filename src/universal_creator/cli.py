@@ -66,7 +66,7 @@ def cmd_new_skill(
     ] = "claude",
     scope: Annotated[str, typer.Option("--scope", help="local | global")] = "local",
     output_dir: Annotated[
-        Optional[str], typer.Option("--output-dir", help="Parent dir (default: host-specific)")
+        str | None, typer.Option("--output-dir", help="Parent dir (default: host-specific)")
     ] = None,
     ask_location: Annotated[
         bool, typer.Option("--ask-location/--no-ask-location", help="Ask where to write the skill interactively")
@@ -251,7 +251,7 @@ def cmd_eval(
 @app.command("list")
 def cmd_list(
     installed: Annotated[
-        Optional[str],
+        str | None,
         typer.Option(
             "--installed",
             help="Show installed skills for: claude | copilot | gemini | codex",

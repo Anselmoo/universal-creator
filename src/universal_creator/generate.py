@@ -72,9 +72,9 @@ def _render_template(env: "Environment", template_path: str, ctx: dict) -> str:
 def scaffold_skill(
     name: str,
     mode: str = "empty",
-    output_dir: Optional[str] = None,
+    output_dir: str | None = None,
     overwrite: bool = False,
-    host: Optional[str] = None,
+    host: str | None = None,
     scope: str = "local",
 ) -> int:
     """Create a new skill directory under output_dir/name.
