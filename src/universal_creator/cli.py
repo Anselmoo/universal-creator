@@ -16,7 +16,7 @@ from __future__ import annotations
 import subprocess
 import sys
 from pathlib import Path
-from typing import Annotated, Literal, Optional, cast
+from typing import Annotated, Literal, cast
 
 import typer
 from pydantic import ValidationError
