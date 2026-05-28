@@ -12,6 +12,8 @@ description: >-
   for writing prompts for one-shot tasks (use prompt-generator); for writing
   always-on workspace instructions (use instruction-generator).
 license: "MIT"
+dependencies:
+  - shared
 ---
 
 # Agent Generator
@@ -59,9 +61,24 @@ List only tools this agent needs. Anything not listed is implicitly unavailable.
 | `replace_string_in_file` / `create_file` | Only if writes needed | |
 | `run_in_terminal` | Only if execution needed | Must be justified |
 | `web_search` / `fetch_webpage` | Only if retrieval needed | |
-| `vscode_*` | Only for VS Code–specific tasks | |
+| `vscode_*` | Only for VS Code-specific tasks | |
 
 Default posture: **read-only unless writes are explicitly required**.
+
+### Step 2.5 — Select Prompting Technique
+
+Before writing the system prompt, spawn `skills/shared/technique-selector.md` as a subagent:
+- `request`: the user's generation request (verbatim)
+- `generator_type`: "agent"
+
+Apply each item in the returned `structural_requirements` when writing the system prompt in Step 3:
+- **zero-shot**: role + task + output format constraint only — nothing more
+- **few-shot**: `<examples>` XML block with 3 input/output pairs in the system prompt body
+- **cot**: "Think through this step by step" + numbered process steps + `<thinking>/<answer>` structure
+- **prompt-chaining**: numbered stages with explicit named intermediate output placeholders
+- **react**: Thought/Action/Observation loop + tool list + Finish[answer] termination signal
+
+Embed the technique structurally — do not just name it.
 
 ### Step 3 — Write the system prompt
 
@@ -149,6 +166,8 @@ If this agent delegates to sub-agents, document:
 - [ ] Description does NOT start with "I" or "You".
 - [ ] Termination criteria are concrete (not "when done").
 - [ ] Handoff output format is specified if the agent delegates.
+- [ ] technique-selector was called before writing the system prompt.
+- [ ] The selected technique's structural requirements are embedded (not just named) in the system prompt body.
 
 ### Step 7 — Scaffold and validate the file
 
@@ -188,6 +207,18 @@ The validator checks:
 - **Vague termination**: "when the task is complete". Add measurable criteria.
 - **Missing non-goals**: without explicit exclusions, agents scope-creep. List at least two.
 - **First-person description**: `description` is injected into system context; inconsistent POV causes discovery failures.
+
+## Technique Embedding Guide
+
+When technique-selector returns a result, embed the technique structurally — not just as a mention.
+
+| Technique | What "embedded" means for an agent system prompt |
+|-----------|--------------------------------------------------|
+| zero-shot | Explicit role + precise task + output format constraint. Nothing else. |
+| few-shot | System prompt body contains `<examples>` XML with 3 `<example>` children (each `<input>` + `<output>`). |
+| cot | Process section uses numbered steps; output format requires `<thinking>` before conclusion; "think step by step" is in the instructions. |
+| prompt-chaining | Agent outputs a named artifact feeding a documented downstream stage; handoff schema is in the Output format section. |
+| react | Instructions contain the Thought/Action/Observation loop; tools listed with signatures; Finish[answer] terminates. |
 
 ## Output format
 

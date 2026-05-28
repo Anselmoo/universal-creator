@@ -89,7 +89,7 @@ Read the skill guidance and examples. Ask:
 
 ### Step 6: Surface fingerprint traits
 
-Write 3–6 short traits that capture the candidate's identity, such as:
+Write 3-6 short traits that capture the candidate's identity, such as:
 - "single-purpose reviewer with explicit refusal boundary"
 - "research agent with unjustified terminal access"
 - "well-scoped sub-agent orchestrator with clear return schema"

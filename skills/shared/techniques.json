@@ -1,0 +1,385 @@
+{
+  "version": "1.0",
+  "description": "Registry of 18 prompt engineering techniques used by universal-creator generators. Read by technique-selector at generation time to determine which technique to embed in a generated artifact.",
+  "techniques": [
+    {
+      "id": "zero-shot",
+      "name": "Zero-shot",
+      "escalation_ladder_position": 1,
+      "purpose": "Direct task instruction without examples; rely on the model's pre-trained knowledge of the task domain",
+      "example_snippet": "You are a <role>.\n\n<Task description. Be specific about what you want.>\n\n<Output format: \"Return a JSON object with fields X, Y, Z.\" / \"Answer in plain prose under 200 words.\">",
+      "structure_signals": [
+        "Explicit role statement followed immediately by the task instruction",
+        "Specific output format constraint stated as a requirement",
+        "No <examples> XML block and no reasoning loop",
+        "Task is self-contained — no external retrieval or intermediate stages"
+      ],
+      "when_to_apply": [
+        "Well-defined tasks with clear, common output formats",
+        "Common domains where the model has reliable pre-trained coverage",
+        "Simple transformations or conversions with unambiguous rules",
+        "Single-turn, single-output tasks with no dependencies"
+      ],
+      "fits_use_cases": [1],
+      "supplementary_for": []
+    },
+    {
+      "id": "few-shot",
+      "name": "Few-shot",
+      "escalation_ladder_position": 2,
+      "purpose": "Provide 3-5 input/output examples to demonstrate the expected format, style, or domain-specific behavior",
+      "example_snippet": "<examples>\n<example>\n<input>The sky at sunset</input>\n<output>orange</output>\n</example>\n<example>\n<input>Fresh mint leaves</input>\n<output>green</output>\n</example>\n<example>\n<input>Ocean water</input>\n<output>blue</output>\n</example>\n</examples>\n\nNow classify: <input>A ripe banana</input>",
+      "structure_signals": [
+        "<examples> XML block wrapping all examples",
+        "Each example is a <example> element containing <input> and <output> children",
+        "2-5 examples present; diverse inputs covering different cases",
+        "Examples use real task inputs, not toy or trivial demonstrations"
+      ],
+      "when_to_apply": [
+        "Niche or custom output format the model hasn't seen frequently",
+        "Domain-specific classification with non-standard category labels",
+        "Tasks where the output format is ambiguous without a demonstration",
+        "Style or tone matching — output must look like the provided examples"
+      ],
+      "fits_use_cases": [2],
+      "supplementary_for": [3]
+    },
+    {
+      "id": "cot",
+      "name": "Chain-of-Thought",
+      "escalation_ladder_position": 3,
+      "purpose": "Elicit intermediate reasoning steps before the final answer to improve accuracy on multi-step, multi-criteria, or ambiguous tasks",
+      "example_snippet": "Think through this step by step before giving your final answer.\n\nUse <thinking>…</thinking> for your reasoning.\nUse <answer>…</answer> for the final result.",
+      "structure_signals": [
+        "Explicit instruction to reason before answering: 'think step by step', 'work through this', 'reason before deciding'",
+        "Numbered reasoning steps or labeled blocks (Step 1, Step 2…) in instructions or worked example",
+        "<thinking>/<answer> tag pair or equivalent structure separating reasoning from conclusion",
+        "Intermediate conclusions required before the final answer — not optional"
+      ],
+      "when_to_apply": [
+        "Multi-step logic, chained calculations, or sequential decisions",
+        "Ambiguous decision boundaries where the reasoning path matters more than the answer alone",
+        "Multi-criteria evaluation: scoring, ranking, risk assessment, code review",
+        "Tasks where zero-shot gives confident but incorrect answers on intermediate steps"
+      ],
+      "fits_use_cases": [3],
+      "supplementary_for": [1, 2, 4, 5]
+    },
+    {
+      "id": "prompt-chaining",
+      "name": "Prompt Chaining",
+      "escalation_ladder_position": 4,
+      "purpose": "Decompose a complex task into sequential sub-prompts where each output becomes the next input, enabling independent validation of intermediate results",
+      "example_snippet": "=== Stage 1: Extract ===\nFrom the document below, extract all statements of fact.\nReturn as a JSON array of strings named <extracted_facts>.\n\n=== Stage 2: Filter (takes Stage 1 output) ===\nFrom <extracted_facts>, select only the facts relevant to Q4 2024.\nReturn matching facts as <filtered_facts>.\n\n=== Stage 3: Synthesize (takes Stage 2 output) ===\nUsing only <filtered_facts>, write a two-sentence executive summary.",
+      "structure_signals": [
+        "Multiple numbered or labeled stages with explicit names",
+        "Each stage's output is a named artifact (e.g., <extracted_facts>) used as input to the next stage",
+        "Validation checkpoint mentioned between stages",
+        "Final stage does synthesis or delivery — not rework of earlier stages"
+      ],
+      "when_to_apply": [
+        "Tasks that naturally decompose into sequential steps",
+        "When intermediate outputs can be independently verified before passing forward",
+        "When one stage failure should not cascade into the next",
+        "Workflows with distinct phases: extract → filter → synthesize; spec → design → implement"
+      ],
+      "fits_use_cases": [4],
+      "supplementary_for": [5]
+    },
+    {
+      "id": "react",
+      "name": "ReAct",
+      "escalation_ladder_position": 5,
+      "purpose": "Interleave reasoning and tool use in Thought → Action → Observation cycles for tasks requiring external lookup or state changes",
+      "example_snippet": "You have access to these tools: [tool_list]\n\nUse the following loop until the task is complete:\nThought: <what you need to find out and why>\nAction: <tool_name>[<tool_input>]\nObservation: <tool result — never fabricate>\n…repeat as needed…\nThought: I have enough information to answer.\nAction: Finish[<final answer>]",
+      "structure_signals": [
+        "Thought/Action/Observation loop format explicitly stated in instructions",
+        "Available tools enumerated with names and input types",
+        "Finish[answer] or equivalent explicit termination signal",
+        "Instruction not to fabricate or guess Observation values",
+        "Loop limit stated (e.g., ≤10 cycles)"
+      ],
+      "when_to_apply": [
+        "Tasks requiring external lookups, file reads, API calls, or tool invocation",
+        "State changes during execution and the next action depends on the previous result",
+        "Task cannot be answered from the prompt alone — external evidence is required",
+        "The agent must choose between multiple investigative paths based on discoveries"
+      ],
+      "fits_use_cases": [5],
+      "supplementary_for": [4]
+    },
+    {
+      "id": "meta-prompting",
+      "name": "Meta-prompting",
+      "escalation_ladder_position": 6,
+      "purpose": "Ask the model to generate and critique its own prompt for a task, then execute that prompt — useful when you know the goal but not the best framing",
+      "example_snippet": "You are a prompt engineer. Write a detailed system prompt for an AI assistant that will <task description>. The prompt must specify:\n- Role and persona\n- Output format and constraints\n- Edge case handling\n- Failure modes to avoid\n\nCritique your prompt before executing it. Then execute it on this input: <input>",
+      "structure_signals": [
+        "Instruction to generate a prompt as an intermediate artifact",
+        "Criteria the generated prompt must satisfy (role, format, edge cases)",
+        "Self-critique step before execution",
+        "Execution of the generated prompt on a concrete input"
+      ],
+      "when_to_apply": [
+        "You know the goal but cannot find an effective direct framing",
+        "Iterating on prompt quality for a new domain",
+        "Bootstrapping a new skill or task type",
+        "When the task is novel and default framings fail"
+      ],
+      "fits_use_cases": [],
+      "supplementary_for": [1, 2, 3, 4, 5]
+    },
+    {
+      "id": "self-consistency",
+      "name": "Self-consistency",
+      "escalation_ladder_position": 7,
+      "purpose": "Sample multiple independent reasoning paths and select the most consistent (majority-vote) answer for high-stakes single answers",
+      "example_snippet": "Answer the following question three times independently, using a different reasoning approach each time. After all three answers, identify the most common answer and state it as your final answer.\n\nQuestion: <question>\n\n## Attempt 1\n## Attempt 2\n## Attempt 3\n## Final answer (most consistent)",
+      "structure_signals": [
+        "Instruction to answer multiple times (2-5) independently",
+        "Explicit majority-vote or consistency-selection step at the end",
+        "Each attempt uses a different reasoning approach",
+        "Final answer is determined by consistency, not recency"
+      ],
+      "when_to_apply": [
+        "High-stakes single answers (math, logic, classification)",
+        "Tasks where the reasoning path varies but the correct answer is unique",
+        "Critical decisions where a single reasoning path may have blind spots",
+        "Verification of an important conclusion before acting on it"
+      ],
+      "fits_use_cases": [],
+      "supplementary_for": [3]
+    },
+    {
+      "id": "generate-knowledge",
+      "name": "Generate-knowledge",
+      "escalation_ladder_position": 8,
+      "purpose": "Prime the model with relevant domain facts before answering to improve factual grounding in knowledge-intensive tasks",
+      "example_snippet": "Step 1 — Generate knowledge:\nList 5 key facts about <topic> relevant to answering <question>.\nMark uncertain facts with ⚠️.\n\nStep 2 — Answer using those facts:\nUsing only the facts you listed above, answer: <question>",
+      "structure_signals": [
+        "Two-step structure: fact generation then answering",
+        "Explicit instruction to use only the generated facts when answering",
+        "Uncertainty marker requested for unreliable facts",
+        "Step 2 is constrained to Step 1 output — no additional knowledge injected"
+      ],
+      "when_to_apply": [
+        "Factual questions where the model may not surface relevant background unprompted",
+        "Science, history, policy, or technical domains requiring precise knowledge",
+        "When generate-knowledge facts can be verified before proceeding",
+        "As a lighter alternative to RAG when no external corpus is available"
+      ],
+      "fits_use_cases": [],
+      "supplementary_for": [1, 3]
+    },
+    {
+      "id": "tree-of-thoughts",
+      "name": "Tree-of-Thoughts",
+      "escalation_ladder_position": 9,
+      "purpose": "Enumerate multiple solution branches, score each on multiple criteria, and select or backtrack — for strategic decisions with no single obvious solution path",
+      "example_snippet": "You are solving: <problem>\n\nGenerate 3 distinct high-level approaches. For each:\n1. Describe the approach (1-2 sentences).\n2. Score: feasibility (1-10), effort (1-10), risk (1-10).\n3. Identify the biggest unknown or blocker.\n\nAfter evaluating all branches, select the best one and explain why.\nThen outline the first 3 concrete steps for the selected approach.",
+      "structure_signals": [
+        "Explicit enumeration of 2-4 distinct approaches (branches)",
+        "Scoring rubric with named dimensions applied to each branch",
+        "Comparison and selection step after all branches are evaluated",
+        "Concrete next steps for the selected branch only"
+      ],
+      "when_to_apply": [
+        "Strategic or design decisions with no single obvious solution",
+        "Architecture or system design with meaningful trade-offs between approaches",
+        "Problems where the evaluation criteria are multi-dimensional",
+        "When a single linear chain of thought would miss important alternatives"
+      ],
+      "fits_use_cases": [],
+      "supplementary_for": [3, 4]
+    },
+    {
+      "id": "rag",
+      "name": "RAG (Retrieval-Augmented Generation)",
+      "escalation_ladder_position": 10,
+      "purpose": "Retrieve relevant document chunks externally and inject them as context before answering — grounds responses in verified, up-to-date sources",
+      "example_snippet": "Answer using ONLY the provided context passages.\nIf the answer is not in the passages, say \"Not found in the provided context.\"\nCite which passage(s) support your answer.\n\n<context>\n[Passage 1]: {retrieved_chunk_1}\n[Passage 2]: {retrieved_chunk_2}\n[Passage 3]: {retrieved_chunk_3}\n</context>\n\nQuestion: <question>",
+      "structure_signals": [
+        "<context> XML tags isolating retrieved passages from the question",
+        "Instruction to answer ONLY from provided context",
+        "Fallback phrase for when the answer is not found",
+        "Citation instruction: cite passage numbers or identifiers"
+      ],
+      "when_to_apply": [
+        "Factual Q&A over a large corpus (docs, codebase, knowledge base)",
+        "Tasks where the model's training data may be stale or incomplete",
+        "Answers that must be traceable to a specific verified source",
+        "Reducing hallucination by constraining the model to provided text"
+      ],
+      "fits_use_cases": [],
+      "supplementary_for": [1, 2, 3, 4, 5]
+    },
+    {
+      "id": "art",
+      "name": "ART (Auto-Reasoning & Tool-use)",
+      "escalation_ladder_position": 11,
+      "purpose": "Combine an LLM with a dynamic tool library — the model selects the appropriate tool for each sub-task from a provided catalog, justifying each choice",
+      "example_snippet": "You have access to these tools. For each sub-task, select the most appropriate tool.\nDo not use a tool if the sub-task can be answered from context alone.\n\nAvailable tools:\n- search(query: str) → list of results\n- calculator(expression: str) → numeric result\n- code_exec(code: str, language: str) → stdout/stderr\n\nTask: <complex multi-step task>\n\nFor each step:\nTool used: <tool name or \"none\">\nReason: <why this tool is needed>\nResult: <tool output>",
+      "structure_signals": [
+        "Explicit tool catalog with name and signature for each tool",
+        "Per-step documentation: tool used, reason, result",
+        "Instruction not to use a tool when context alone is sufficient",
+        "Heterogeneous tool types (search, calculation, code) in one catalog"
+      ],
+      "when_to_apply": [
+        "Tasks requiring heterogeneous operations (search + calculation + code)",
+        "Agentic workflows with a known, bounded tool library",
+        "When tool selection logic is declarative and catalog-driven",
+        "As a structured alternative to ReAct when the tool set is fixed"
+      ],
+      "fits_use_cases": [],
+      "supplementary_for": [5]
+    },
+    {
+      "id": "ape",
+      "name": "APE (Auto Prompt Engineer)",
+      "escalation_ladder_position": 12,
+      "purpose": "Automatically generate and score multiple prompt candidates to find the most effective framing before deployment",
+      "example_snippet": "Task description: <what you want the final prompt to accomplish>\nEvaluation criterion: <how to score quality>\n\nGenerate 5 distinct system prompt candidates. Each should take a different approach (tone, structure, or instruction style).\n\nAfter generating all 5, score each against the criterion (0-10).\nOutput: the highest-scoring prompt in full, followed by your reasoning.",
+      "structure_signals": [
+        "Explicit number of candidate prompts to generate (3-5)",
+        "Named evaluation criterion applied uniformly to all candidates",
+        "Scoring step with numeric scores for each candidate",
+        "Winner selection with rationale; winner output in full"
+      ],
+      "when_to_apply": [
+        "When you need a reusable prompt and are unsure which framing works best",
+        "Prompt quality optimization before production deployment",
+        "When meta-prompting keeps producing similar-quality output",
+        "Systematic comparison of instruction styles for a specific task"
+      ],
+      "fits_use_cases": [],
+      "supplementary_for": [1, 2, 3, 4, 5]
+    },
+    {
+      "id": "active-prompt",
+      "name": "Active-prompt",
+      "escalation_ladder_position": 13,
+      "purpose": "Identify inputs where the model is most uncertain, annotate those as few-shot examples, and use them to reduce error on the hardest cases",
+      "example_snippet": "Step 1 — Identify uncertainty:\nFor each input below, answer the question AND provide a confidence score (0-100%).\nFlag answers with confidence below 70%.\n\nInputs: [list of candidate inputs]\n\nStep 2 — Human annotates flagged inputs (external step)\n\nStep 3 — Add annotated inputs as high-value examples:\n<examples>\n<example><input>[flagged input]</input><output>[correct answer]</output></example>\n</examples>",
+      "structure_signals": [
+        "Confidence scoring step per input before example selection",
+        "Explicit threshold for flagging uncertain inputs (e.g., <70%)",
+        "Human annotation step documented as external",
+        "Flagged inputs appear as examples in the final prompt — not random samples"
+      ],
+      "when_to_apply": [
+        "Fine-tuning few-shot example selection for maximum informativeness",
+        "When you have many candidate examples and want the most discriminating ones",
+        "Classification tasks with borderline or ambiguous cases",
+        "Calibrating few-shot prompts for edge cases, not just happy paths"
+      ],
+      "fits_use_cases": [],
+      "supplementary_for": [2]
+    },
+    {
+      "id": "dsp",
+      "name": "DSP (Demonstrate-Search-Predict)",
+      "escalation_ladder_position": 14,
+      "purpose": "Multi-hop reasoning: decompose into sub-questions, retrieve or demonstrate facts per sub-question, then synthesize the final answer",
+      "example_snippet": "You are answering a multi-hop question. Follow three steps:\n\nStep 1 — Search: identify what sub-questions need to be answered first. List each sub-question.\n\nStep 2 — Demonstrate: for each sub-question, find or state the relevant fact. Cite your source.\n\nStep 3 — Predict: using only the facts from Step 2, answer the original question.\n\nOriginal question: <complex multi-hop question>",
+      "structure_signals": [
+        "Explicit three-step structure: search → demonstrate → predict",
+        "Sub-question decomposition in Step 1",
+        "Per-sub-question fact citation in Step 2",
+        "Step 3 constrained to use only Step 2 facts — no new reasoning"
+      ],
+      "when_to_apply": [
+        "Questions requiring chaining of multiple facts across different sources",
+        "Knowledge graph traversal or organizational hierarchy queries",
+        "Multi-hop reasoning where each hop depends on the previous answer",
+        "When RAG retrieval needs to be structured per sub-question"
+      ],
+      "fits_use_cases": [],
+      "supplementary_for": [3, 4]
+    },
+    {
+      "id": "pal",
+      "name": "PAL (Program-Aided Language Models)",
+      "escalation_ladder_position": 15,
+      "purpose": "Generate runnable code to solve the problem, execute it, and use the program output as the answer — more reliable than language-model arithmetic",
+      "example_snippet": "Solve the following problem by writing a Python program.\nDo not calculate in your head — write code that calculates it.\nReturn ONLY the Python code. No explanations or prose.\n\nProblem: <mathematical or algorithmic problem>",
+      "structure_signals": [
+        "Instruction to write code rather than compute directly",
+        "Code-only output requirement — no explanations inline",
+        "Language specified (Python recommended)",
+        "Execution step is external — code output feeds the final answer"
+      ],
+      "when_to_apply": [
+        "Arithmetic word problems where language-model arithmetic is unreliable",
+        "Combinatorics, probability, or symbolic calculation tasks",
+        "Any problem where symbolic execution is more reliable than text reasoning",
+        "When the answer must be exact and verifiable by running the code"
+      ],
+      "fits_use_cases": [],
+      "supplementary_for": [3]
+    },
+    {
+      "id": "reflexion",
+      "name": "Reflexion",
+      "escalation_ladder_position": 16,
+      "purpose": "Self-critique loop: generate a draft, evaluate it against explicit criteria, revise, and repeat — for outputs that benefit from a structured second pass",
+      "example_snippet": "## Round 1 — Draft\n<task description>\n\nDraft your answer below:\n\n## Round 2 — Critique\nReview your draft against these criteria:\n- [ ] Criterion 1: <e.g., \"All claims supported by evidence\">\n- [ ] Criterion 2: <e.g., \"Word count under 300\">\n- [ ] Criterion 3: <e.g., \"No passive voice\">\n\nFor each criterion, mark pass ✓ or fail ✗ and explain why.\n\n## Round 3 — Revision\nRewrite to fix every failed criterion. Do not introduce new failures.",
+      "structure_signals": [
+        "Multi-round structure: Draft → Critique → Revision (2-3 rounds max)",
+        "Named criteria checklist in the Critique round",
+        "Pass/fail marking per criterion with explanation",
+        "Revision round constrained to fixing only failed criteria"
+      ],
+      "when_to_apply": [
+        "Writing tasks (essays, emails, reports) that benefit from structured review",
+        "Code review or any output with verifiable quality criteria",
+        "When a single pass reliably misses edge cases",
+        "Outputs that must satisfy multiple explicit, measurable constraints"
+      ],
+      "fits_use_cases": [],
+      "supplementary_for": [1, 2, 3, 4, 5]
+    },
+    {
+      "id": "multimodal-cot",
+      "name": "Multimodal-CoT",
+      "escalation_ladder_position": 17,
+      "purpose": "Chain-of-thought reasoning that integrates both image/diagram analysis and text in the same reasoning chain — for visual data interpretation tasks",
+      "example_snippet": "Look at the image and answer the question using chain-of-thought reasoning.\n\nImage: [attached image or diagram]\nQuestion: <question about the image>\n\nStep 1 — Describe what you see (labels, values, shapes).\nStep 2 — Identify which visual elements are relevant to the question.\nStep 3 — Reason step by step using those elements.\nStep 4 — State your final answer.",
+      "structure_signals": [
+        "Explicit image description step before reasoning begins",
+        "Visual element identification step",
+        "Numbered reasoning steps referencing specific visual elements",
+        "Final answer stated separately after the reasoning chain"
+      ],
+      "when_to_apply": [
+        "Science diagrams, charts, flowcharts, or architectural diagrams",
+        "Math problems with figures or geometric proofs",
+        "UI/UX analysis from screenshots",
+        "Any task where visual content must be analyzed before answering"
+      ],
+      "fits_use_cases": [],
+      "supplementary_for": [3]
+    },
+    {
+      "id": "graph-prompting",
+      "name": "Graph-prompting",
+      "escalation_ladder_position": 18,
+      "purpose": "Inject a knowledge graph as structured triples (subject-relation-object) to ground reasoning in explicit, traceable relationships",
+      "example_snippet": "Use the following knowledge graph to answer the question.\nEach fact: [Subject] --[Relation]--> [Object]\n\nKnowledge graph:\n[Alice] --works_at--> [Acme Corp]\n[Bob] --manages--> [Alice]\n[Acme Corp] --located_in--> [Berlin]\n\nQuestion: <question requiring graph traversal>\n\nReasoning:\n1. Identify relevant nodes and edges.\n2. Trace the path through the graph.\n3. State the answer with the supporting path.",
+      "structure_signals": [
+        "Knowledge graph in triple format: [Subject] --[Relation]--> [Object]",
+        "Explicit reasoning steps: identify nodes → trace path → state answer",
+        "Answer includes the supporting graph path",
+        "Graph contains only the subgraph relevant to the query — not the entire graph"
+      ],
+      "when_to_apply": [
+        "Entity relationship queries requiring multi-hop traversal",
+        "Organizational charts or dependency graphs",
+        "Tasks where explicit relationship structure improves answer accuracy",
+        "When RAG retrieves structured relational data rather than prose"
+      ],
+      "fits_use_cases": [],
+      "supplementary_for": [1, 3]
+    }
+  ]
+}

@@ -50,7 +50,7 @@ For each transcript, trace how the agent generated rules:
 4. Did it review generated rules for contradictions?
 5. Did it avoid process instructions ("think about", "consider")?
 
-### Step 4: Score Instruction Following (1–10)
+### Step 4: Score Instruction Following (1-10)
 
 Score each transcript on adherence to the skill's guidance. Cite specific deviations.
 

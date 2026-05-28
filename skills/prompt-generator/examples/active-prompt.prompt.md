@@ -21,7 +21,7 @@ labeled examples to include in a few-shot prompt.
 ## Step 1 — Zero-shot pre-screening
 
 For each candidate input below, predict the label AND provide a confidence
-score from 0–100 (100 = completely certain).
+score from 0-100 (100 = completely certain).
 
 Output format:
 | # | Input | Predicted label | Confidence |

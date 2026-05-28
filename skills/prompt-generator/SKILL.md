@@ -64,7 +64,7 @@ Prompts without success criteria cannot be improved systematically.
 ```
 Start here. Evaluate. Only escalate if this fails.
 
-**Few-shot (Rung 2):** Add 3–5 concrete examples. Wrap in `<examples>` tags.
+**Few-shot (Rung 2):** Add 3-5 concrete examples. Wrap in `<examples>` tags.
 ```xml
 <examples>
 <example>

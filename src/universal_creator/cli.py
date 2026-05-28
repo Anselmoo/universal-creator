@@ -134,14 +134,28 @@ def cmd_new_skill(
 
 @app.command("install")
 def cmd_install(
-    skill: Annotated[str, typer.Option("--skill", "-s", help="Skill name to install")],
+    skill: Annotated[
+        str | None, typer.Option("--skill", "-s", help="Skill name to install")
+    ] = None,
+    all_skills: Annotated[
+        bool, typer.Option("--all", "-a", help="Install all bundled skills")
+    ] = False,
     host: Annotated[
         str, typer.Option("--host", help="claude | copilot | gemini | codex")
     ] = "copilot",
     scope: Annotated[str, typer.Option("--scope", help="local | global")] = "local",
     overwrite: Annotated[bool, typer.Option("--overwrite/--no-overwrite")] = False,
 ) -> None:
-    """Install a bundled skill to Claude, Copilot, Gemini, or Codex."""
+    """Install a bundled skill (or all skills) to Claude, Copilot, Gemini, or Codex."""
+    if all_skills:
+        from universal_creator.install import install_all
+
+        raise typer.Exit(install_all(host, scope, Path.cwd()))
+
+    if not skill:
+        typer.echo("Error: provide --skill NAME or use --all to install every skill", err=True)
+        raise typer.Exit(1)
+
     from universal_creator.install import install_skill
     from universal_creator.models import SkillInstallConfig
 

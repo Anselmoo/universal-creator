@@ -53,7 +53,7 @@ Answer before writing:
 | Variant | Use when | Target length |
 |---------|----------|---------------|
 | Concise rules | Simple preferences (naming, style, imports) | ≤ 20 lines |
-| Extended rules | Fragile workflows, multi-step processes, error-prone areas | 20–60 lines |
+| Extended rules | Fragile workflows, multi-step processes, error-prone areas | 20-60 lines |
 | Reference-based | Large rule sets; use progressive disclosure | SKILL body → `details.md` |
 
 If the instruction body would exceed 60 lines, split it:

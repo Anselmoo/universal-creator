@@ -33,7 +33,7 @@ For each candidate, extract:
 - Output format section (present/absent, specificity)
 - Domain scripts present in `scripts/`
 
-### Step 2: Score each dimension (1–5)
+### Step 2: Score each dimension (1-5)
 
 | Dimension | Description |
 |-----------|-------------|

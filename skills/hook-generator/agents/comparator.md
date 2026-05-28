@@ -54,10 +54,10 @@ Build a hook-specific rubric from these two dimensions:
 
 ### Step 4: Score Each Output
 
-Score each criterion (1–5) for both A and B. Calculate:
+Score each criterion (1-5) for both A and B. Calculate:
 - Content score: average of content criteria
 - Structure score: average of structure criteria
-- Overall score: (content + structure) / 2 × 2 (scale to 1–10)
+- Overall score: (content + structure) / 2 × 2 (scale to 1-10)
 
 ### Step 5: Check Assertions (if provided)
 

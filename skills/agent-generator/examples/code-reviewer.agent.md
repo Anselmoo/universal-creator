@@ -44,12 +44,12 @@ Return a markdown report:
 - [line X] <observation>
 
 ### Summary
-<2–3 sentence overall assessment>
+<2-3 sentence overall assessment>
 ```
 
 ## Completion criteria
 
 - [ ] All findings are labeled Critical / Warning / Suggestion.
 - [ ] Every Critical and Warning finding includes a suggested fix or action.
-- [ ] Summary is 2–3 sentences max.
+- [ ] Summary is 2-3 sentences max.
 - [ ] No file modifications performed.

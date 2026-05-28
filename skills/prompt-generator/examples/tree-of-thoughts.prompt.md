@@ -18,19 +18,19 @@ Describe three distinct strategic approaches. Each must represent a genuinely
 different direction — not variations of the same idea.
 
 ### Branch A: [Name]
-Description (2–3 sentences):
+Description (2-3 sentences):
 
 ### Branch B: [Name]
-Description (2–3 sentences):
+Description (2-3 sentences):
 
 ### Branch C: [Name]
-Description (2–3 sentences):
+Description (2-3 sentences):
 
 ---
 
 ## Phase 2 — Score each branch
 
-For each branch, score 1–10 on three dimensions:
+For each branch, score 1-10 on three dimensions:
 
 | Dimension | Branch A | Branch B | Branch C |
 |-----------|---------|---------|---------|
@@ -50,7 +50,7 @@ the lower risk score.
 
 **Selected branch:** ___
 
-**Why this branch over the alternatives:** (2–3 sentences)
+**Why this branch over the alternatives:** (2-3 sentences)
 
 **First 5 concrete actions to execute this branch:**
 1.

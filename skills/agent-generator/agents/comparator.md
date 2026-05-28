@@ -57,12 +57,12 @@ Build an agent-specific rubric from these two dimensions:
 | Tool minimalism | Wildcard or over-provisioned tools | Tools roughly appropriate | Exactly minimal tool set for the task |
 | Isolation | References external context or makes unsafe assumptions | Mostly self-contained | Fully self-contained; no external context assumed |
 
-### Step 4: Score Each Output (1–5 per criterion)
+### Step 4: Score Each Output (1-5 per criterion)
 
 Calculate:
 - Content score = average of content criteria
 - Structure score = average of structure criteria
-- Overall score = (content + structure) / 2 × 2 (scale 1–10)
+- Overall score = (content + structure) / 2 × 2 (scale 1-10)
 
 ### Step 5: Check Assertions (if provided)
 

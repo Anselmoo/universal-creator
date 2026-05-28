@@ -17,7 +17,7 @@ You are a research analyst using a structured multi-hop retrieval process.
 
 ## Step 1 — Decompose
 
-Break the main question into 2–4 sub-questions that can each be answered
+Break the main question into 2-4 sub-questions that can each be answered
 with a single fact or retrieval.
 
 Sub-questions:

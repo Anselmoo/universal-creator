@@ -14,6 +14,8 @@ description: >-
   or sub-agents (use agent-generator skill); for writing VS Code instructions (use
   instruction-generator skill).
 license: "MIT"
+dependencies:
+  - shared
 ---
 
 # Hook Generator
@@ -52,6 +54,24 @@ Follow these steps in order. Mark each ✓ when done.
 - [ ] Identify the lifecycle moment (see Quick Decision table above).
 - [ ] Identify the trigger scope: specific tool name, any tool, or a non-tool event.
 - [ ] Decide: deterministic rule (→ `command` hook) or judgment call (→ `prompt` or `agent` hook)?
+
+### Step 1.5 — Select Prompting Technique
+
+Spawn `skills/shared/technique-selector.md` as a subagent:
+- `request`: the user's hook generation request (verbatim)
+- `generator_type`: "hook"
+
+The selected technique influences both the hook type (Step 2) and the output structure (Step 5):
+
+| Technique | Implied hook type | What to embed |
+|-----------|-----------------|---------------|
+| zero-shot | `command` | Direct deterministic shell command; no LLM judgment |
+| few-shot | `command` or `prompt` | Instructions include 2-3 example patterns with expected allow/deny |
+| cot | `prompt` or `agent` | "Think through risks step by step before deciding"; reasoning required before decision |
+| prompt-chaining | Multiple hooks chained | PreToolUse captures state; PostToolUse validates against it |
+| react | `agent` | Thought/Action/Observation loop; tools listed; explicit allow/deny termination |
+
+Apply the `structural_requirements` from the selector in Step 5.
 
 ### Step 2 — Choose hook type
 
@@ -144,6 +164,8 @@ Exit 0 = valid; non-zero = schema violations printed per block.
 - [ ] Is the script executable and returning valid JSON on stdout? → Test with `echo '{}' | ./hook.sh`.
 - [ ] Is the hook in project scope (`.claude/settings.json`) or user scope (`~/.claude/settings.json`)? → Confirm intent.
 - [ ] Does an async hook need its side-effects to complete before Claude continues? → Use `"async": false` (only `PostToolUse` supports async).
+- [ ] technique-selector was called before choosing hook type.
+- [ ] The selected technique's structural requirements are embedded in the hook configuration, not just referenced.
 
 ## Anti-patterns
 
@@ -154,6 +176,18 @@ Exit 0 = valid; non-zero = schema violations printed per block.
 - **Missing SubagentStop on agentic tasks**: If using sub-agents, add a `SubagentStop` hook to verify sub-agent output before Claude continues.
 - **Time-sensitive matchers**: Avoid matching on content that changes frequently; prefer tool-name + if combination.
 - **Storing secrets in command strings**: Any secret in a JSON file is readable. Use environment variable references.
+
+## Technique Embedding Guide
+
+When technique-selector returns a result, embed the technique structurally — not just by referencing it.
+
+| Technique | What "embedded" means for a hook configuration |
+|-----------|------------------------------------------------|
+| zero-shot | `command` hook with narrow matcher and direct shell logic; no LLM call. |
+| few-shot | `prompt` or `agent` hook whose instructions demonstrate correct behavior with 2-3 examples before asking for a decision. |
+| cot | `prompt` or `agent` hook includes "Think step by step through the risks before deciding" with numbered reasoning required before the `ok`/`deny` output. |
+| prompt-chaining | Two hook entries where the first captures state and the second validates against it (e.g., `PreToolUse` + `PostToolUse` pair with shared context). |
+| react | `agent` hook with Thought/Action/Observation loop; tools listed with signatures; terminates with explicit allow/deny. |
 
 ## Output format
 

@@ -8,7 +8,7 @@ description: >-
 
 You are a plain-language contract analyst.
 
-Read the clause below and produce a one-paragraph summary (3–5 sentences) for a non-lawyer. Cover:
+Read the clause below and produce a one-paragraph summary (3-5 sentences) for a non-lawyer. Cover:
 1. What obligation or right the clause creates
 2. Who it applies to (which party)
 3. Any key condition, limitation, or deadline
@@ -26,7 +26,7 @@ The task is well-defined (summarize → plain language → fixed output structur
 
 ## When to escalate
 
-If Claude misses key nuances (e.g., carve-outs, cross-references to other clauses) → add 2–3 few-shot examples of clause → summary pairs that demonstrate how to handle edge cases.
+If Claude misses key nuances (e.g., carve-outs, cross-references to other clauses) → add 2-3 few-shot examples of clause → summary pairs that demonstrate how to handle edge cases.
 
 ## Eval scenarios
 

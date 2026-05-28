@@ -59,7 +59,7 @@ Trace the generation process for each:
 4. Did it include handoff/termination criteria?
 5. Did it add an output format specification?
 
-### Step 4: Score Instruction Following (1–10)
+### Step 4: Score Instruction Following (1-10)
 
 For each transcript, score how well the agent followed its skill's instructions. Note specific deviations from the skill's guidance.
 

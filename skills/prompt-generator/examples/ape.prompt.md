@@ -20,7 +20,7 @@ Generate and evaluate five candidate prompts for the following classifier:
 
 ## Step 1 — Generate 5 candidate prompts
 
-Write five distinct prompts (labelled P1–P5) for this task. Each should:
+Write five distinct prompts (labelled P1-P5) for this task. Each should:
 - Give the model a clear role
 - State the labels explicitly
 - Specify the output format (respond with only the label)

@@ -56,7 +56,7 @@ Read the full prompt template file. Note:
 - Output format specification
 - Any explicit technique names mentioned
 
-### Step 2: Score Each Technique (0–100)
+### Step 2: Score Each Technique (0-100)
 
 For each of the 18 techniques, independently assess:
 - **Structural evidence**: Does the template's structure require the technique to function?
@@ -66,10 +66,10 @@ For each of the 18 techniques, independently assess:
 Think through each candidate before scoring. Do not skip techniques because they seem unlikely — assign a low score with reasoning.
 
 Score interpretation:
-- **80–100**: Structurally embedded — technique is clearly and correctly applied
-- **50–79**: Partial — some structural elements present but technique not fully embedded
-- **20–49**: Naming only — technique mentioned but not structurally applied
-- **0–19**: Not present — no evidence of this technique
+- **80-100**: Structurally embedded — technique is clearly and correctly applied
+- **50-79**: Partial — some structural elements present but technique not fully embedded
+- **20-49**: Naming only — technique mentioned but not structurally applied
+- **0-19**: Not present — no evidence of this technique
 
 ### Step 3: Identify Ambiguities
 
@@ -84,8 +84,8 @@ For each ambiguity, generate a **clarifying question** that would resolve it.
 
 - **Primary technique**: Highest confidence score (≥50) — the technique most responsible for the template's structure
 - **Secondary techniques**: Any other scores ≥50 — techniques that are also present
-- **Present but weak** (20–49): Techniques mentioned but not structurally embedded
-- **Absent** (0–19): Not worth reporting unless there was a false signal
+- **Present but weak** (20-49): Techniques mentioned but not structurally embedded
+- **Absent** (0-19): Not worth reporting unless there was a false signal
 
 ### Step 5: Write Detection Results
 

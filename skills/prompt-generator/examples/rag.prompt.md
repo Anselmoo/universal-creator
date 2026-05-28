@@ -63,4 +63,4 @@ Requiring citation-only answers prevents confabulation. The retrieval step decou
 
 ## When to escalate
 
-If the question requires synthesizing information across more than 6–8 passages → use a prompt chain where Stage 1 summarizes each passage and Stage 2 synthesizes the summaries. If the retrieved passages have conflicting information → add an explicit conflict-resolution instruction.
+If the question requires synthesizing information across more than 6-8 passages → use a prompt chain where Stage 1 summarizes each passage and Stage 2 synthesizes the summaries. If the retrieved passages have conflicting information → add an explicit conflict-resolution instruction.

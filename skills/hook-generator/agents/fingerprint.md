@@ -91,7 +91,7 @@ Read the skill guidance and examples, then determine whether the candidate refle
 
 ### Step 7: Write the fingerprint summary
 
-Surface the 3–6 traits that best describe this hook's identity and the smallest fixes that would increase trustworthiness.
+Surface the 3-6 traits that best describe this hook's identity and the smallest fixes that would increase trustworthiness.
 
 ## Output Format
 

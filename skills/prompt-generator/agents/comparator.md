@@ -58,9 +58,9 @@ Build a prompt-specific rubric:
 | Variable usability | Undocumented variables or wrong format | Variables present, inferable from context | All variables documented, consistent `{{ALL_CAPS}}` format |
 | Production readiness | Template needs major rework to use | Usable with minor edits | Copy-paste ready, no TODOs or placeholders left unresolved |
 
-### Step 4: Score Each Output (1–5 per criterion)
+### Step 4: Score Each Output (1-5 per criterion)
 
-Calculate content and structure scores. Overall = (content + structure) / 2 × 2 → scale 1–10.
+Calculate content and structure scores. Overall = (content + structure) / 2 × 2 → scale 1-10.
 
 Adapt criteria to the requested technique. For example:
 - **Few-shot**: Check `<examples>` XML format, example count, and input variety

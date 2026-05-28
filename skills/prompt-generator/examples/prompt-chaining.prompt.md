@@ -35,8 +35,8 @@ outline for a 600-word article on: {{TOPIC}}
 
 The outline must have:
 - A working title
-- 3–5 sections with H2 headers
-- 2–3 bullet points per section, each mapped to a specific fact number
+- 3-5 sections with H2 headers
+- 2-3 bullet points per section, each mapped to a specific fact number
 
 <facts>
 {{STAGE_1_OUTPUT}}

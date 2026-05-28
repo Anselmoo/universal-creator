@@ -59,7 +59,7 @@ Template excerpt:
 </examples>
 </input>
 <output>
-PASS — Template contains a well-formed `<examples>` XML block with 2 `<example>` entries, each with `<input>` and `<output>` tags demonstrating the extraction pattern. The examples show input variety (USD vs EUR) and consistent output schema. Evidence: lines 18–31 of template.
+PASS — Template contains a well-formed `<examples>` XML block with 2 `<example>` entries, each with `<input>` and `<output>` tags demonstrating the extraction pattern. The examples show input variety (USD vs EUR) and consistent output schema. Evidence: lines 18-31 of template.
 </output>
 </example>
 <example>

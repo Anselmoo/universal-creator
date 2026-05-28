@@ -56,12 +56,12 @@ Build an instruction-specific rubric:
 | Rule format | Prose paragraphs | Mix of prose and imperative | All rules are concise imperative sentences |
 | Anti-pattern avoidance | Multiple anti-patterns (try/consider/always) | One or two minor issues | No anti-patterns; clean, direct rules |
 
-### Step 4: Score Each Output (1–5 per criterion)
+### Step 4: Score Each Output (1-5 per criterion)
 
 Calculate:
 - Content score = average of content criteria
 - Structure score = average of structure criteria
-- Overall score = (content + structure) / 2 × 2 (scale 1–10)
+- Overall score = (content + structure) / 2 × 2 (scale 1-10)
 
 ### Step 5: Check Assertions (if provided)
 

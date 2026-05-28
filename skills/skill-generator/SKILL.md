@@ -15,6 +15,8 @@ description: >-
   (use prompt-generator); for designing sub-agents with tool policies (use
   agent-generator).
 license: "MIT"
+dependencies:
+  - shared
 ---
 
 # Skill Generator
@@ -58,6 +60,21 @@ Competing skills to exclude: <list skills that could be confused with this one>
 If the user says something like "turn this conversation into a skill", extract these
 answers from the conversation history first (tools used, output patterns observed,
 corrections made) rather than asking the user to repeat themselves.
+
+### Step 1.5 — Select Prompting Technique
+
+Spawn `skills/shared/technique-selector.md` as a subagent:
+- `request`: the user's skill generation request (verbatim)
+- `generator_type`: "skill"
+
+Apply the returned `structural_requirements` when writing the SKILL.md body in Step 3:
+- **zero-shot**: workflow steps are direct imperatives; output format is unambiguous without examples
+- **few-shot**: `examples/` directory with 3 complete artifacts; workflow references them explicitly
+- **cot**: workflow steps include reasoning checkpoints; conventions list explicit decision criteria
+- **prompt-chaining**: SKILL.md defines numbered stages with named intermediate output artifacts
+- **react**: workflow includes tool-invocation steps + conditional validation loops with recovery paths
+
+Embed the technique structurally — do not just mention it.
 
 ### Step 2 — Design domain conventions
 
@@ -153,6 +170,8 @@ python skills/<name>/scripts/validate_<name>_output.py skills/<name>/examples/
 - [ ] `evals/evals.json` has at least one happy-path and one near-miss scenario.
 - [ ] `requirements.txt` declares `pyyaml>=6.0`.
 - [ ] All local links in SKILL.md resolve to existing files.
+- [ ] technique-selector was called before designing domain conventions.
+- [ ] The selected technique's structural requirements are reflected in the workflow steps and conventions, not just mentioned.
 
 ## Conventions
 
@@ -202,6 +221,18 @@ field and confirm the validator catches it before shipping.
 **Missing DO NOT USE clauses** — Without explicit exclusions in the description,
 the skill may trigger when a neighboring skill (agent-generator, hook-generator,
 etc.) is the right choice. Always name the competing skills.
+
+## Technique Embedding Guide
+
+When technique-selector returns a result, embed the technique structurally — not just by mentioning it.
+
+| Technique | What "embedded" means for a SKILL.md |
+|-----------|--------------------------------------|
+| zero-shot | Workflow steps are direct imperatives with unambiguous output format — no examples required. |
+| few-shot | `examples/` has 3+ complete artifacts; workflow references them explicitly; grader evaluates example quality. |
+| cot | Steps include reasoning checkpoints ("Before proceeding, verify…"); conventions list explicit decision criteria; grader checks reasoning depth. |
+| prompt-chaining | SKILL.md defines numbered stages with named intermediate output artifacts; each stage independently verifiable before passing forward. |
+| react | Workflow includes tool-invocation steps; validation loops with conditional retry paths; each validation step is conditional on the previous output. |
 
 ## Output format
 

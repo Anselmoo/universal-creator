@@ -92,7 +92,7 @@ Use the examples as quality anchors. Ask:
 
 ### Step 6: Synthesize the fingerprint
 
-Write 3–6 traits that capture the prompt's signature, such as:
+Write 3-6 traits that capture the prompt's signature, such as:
 - "few-shot classifier with good example diversity and restrained length"
 - "ReAct-shaped prompt for a task that never uses tools"
 - "CoT prompt with clear answer tags but unnecessary reasoning overhead"

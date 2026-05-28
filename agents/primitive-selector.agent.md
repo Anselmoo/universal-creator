@@ -77,7 +77,7 @@ Return a single recommendation card in this exact markdown structure:
 
 **Skill to use:** `<skill-name>`
 
-**Why:** <2–3 sentences explaining why this primitive fits the described problem
+**Why:** <2-3 sentences explaining why this primitive fits the described problem
 and why the alternatives do not.>
 
 **Scaffold command:**

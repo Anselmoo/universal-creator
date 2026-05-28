@@ -49,7 +49,7 @@ Trace the prompt generation process:
 5. Did it define `{{VARIABLE}}` placeholders correctly?
 6. Did it write a focused, actionable role statement (not generic)?
 
-### Step 4: Score Instruction Following (1–10)
+### Step 4: Score Instruction Following (1-10)
 
 Score each transcript on adherence to skill guidance. Cite specific deviations.
 

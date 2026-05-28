@@ -55,14 +55,14 @@ Read both transcripts. For each, trace the agent's reasoning:
 - Did it validate the JSON structure before outputting?
 - Did it check command safety?
 
-### Step 4: Score Instruction Following (1–10)
+### Step 4: Score Instruction Following (1-10)
 
 For each transcript, evaluate:
 - Did the agent use the lifecycle event names exactly as listed in the skill?
 - Did the agent follow the hook schema described in the skill?
 - Did the agent apply safety guidance?
 
-Score 1–10 with specific callouts for deviations.
+Score 1-10 with specific callouts for deviations.
 
 ### Step 5: Identify Winner Strengths
 

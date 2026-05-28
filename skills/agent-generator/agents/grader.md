@@ -58,7 +58,7 @@ tools: [Read, Write, Bash]
 You extract structured data from unstructured input documents and produce clean JSON output. You do not interpret or summarize — only extract what is explicitly present.
 </input>
 <output>
-PASS — The Role section clearly states the agent's purpose (extract structured data → JSON), scope (unstructured input documents), and explicit limitation (no interpretation). Evidence: `## Role` section lines 2–3 of agent body.
+PASS — The Role section clearly states the agent's purpose (extract structured data → JSON), scope (unstructured input documents), and explicit limitation (no interpretation). Evidence: `## Role` section lines 2-3 of agent body.
 </output>
 </example>
 <example>

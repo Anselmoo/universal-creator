@@ -78,7 +78,7 @@ Read the examples and skill guidance, then determine whether the candidate refle
 
 ### Step 6: Synthesize the fingerprint
 
-Write 3–6 traits that describe the file's signature, such as:
+Write 3-6 traits that describe the file's signature, such as:
 - "narrow TypeScript rule pack with strong applyTo hygiene"
 - "broad workspace instruction with prose-heavy, low-enforcement rules"
 - "high-value file-pattern instruction with one contradiction risk"

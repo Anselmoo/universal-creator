@@ -120,6 +120,31 @@ def resolve_agent_target(host: str, scope: str, cwd: Path | None = None) -> Path
     return base.resolve()
 
 
+def _read_skill_dependencies(skill_src: Path) -> list[str]:
+    """Parse the YAML frontmatter of a SKILL.md and return its dependencies list."""
+    skill_md = skill_src / "SKILL.md"
+    if not skill_md.is_file():
+        return []
+    try:
+        content = skill_md.read_text(encoding="utf-8")
+        # Extract content between the first pair of --- markers
+        parts = content.split("---", 2)
+        if len(parts) < 3:
+            return []
+        import re
+        # Simple key: list parser for the dependencies field (avoids a hard yaml dep here)
+        # Format expected:
+        #   dependencies:
+        #     - shared
+        match = re.search(r"^dependencies:\s*\n((?:\s+-\s+\S+\n?)+)", parts[1], re.MULTILINE)
+        if not match:
+            return []
+        items = re.findall(r"^\s+-\s+(\S+)", match.group(1), re.MULTILINE)
+        return items
+    except Exception:
+        return []
+
+
 def install_skill(
     skill_name: str,
     host: str,
@@ -128,6 +153,10 @@ def install_skill(
     overwrite: bool = False,
 ) -> int:
     """Copy a bundled skill to the target directory.
+
+    Dependencies declared in the skill's SKILL.md frontmatter are installed first
+    using overwrite=True so that a shared dependency (e.g. 'shared') is refreshed
+    rather than causing an error when multiple skills depend on it.
 
     Returns 0 on success, 1 on error.
     """
@@ -140,6 +169,17 @@ def install_skill(
         return 1
 
     src = get_bundled_skills_dir() / skill_name
+
+    # Auto-install dependencies before copying this skill.
+    for dep in _read_skill_dependencies(src):
+        dep_rc = install_skill(dep, host, scope, cwd, overwrite=True)
+        if dep_rc != 0:
+            print(
+                f"ERROR: Failed to install dependency '{dep}' for '{skill_name}'",
+                file=sys.stderr,
+            )
+            return 1
+
     target_dir = resolve_target(host, scope, cwd or Path.cwd())
     dest = target_dir / skill_name
 
@@ -155,6 +195,30 @@ def install_skill(
     target_dir.mkdir(parents=True, exist_ok=True)
     shutil.copytree(src, dest)
     print(f"Installed '{skill_name}' → {dest}")
+    return 0
+
+
+def install_all(
+    host: str,
+    scope: str,
+    cwd: Path | None = None,
+) -> int:
+    """Install all bundled skills to the target host and scope.
+
+    Always uses overwrite=True internally: shared dependencies are installed by
+    multiple skills' dep resolution before the direct loop reaches them, so
+    idempotency requires treating every install as a replacement.
+
+    Returns 0 if all skills install successfully, 1 if any skill fails.
+    """
+    results: list[tuple[str, int]] = []
+    for skill_name in list_bundled_skills():
+        rc = install_skill(skill_name, host, scope, cwd, overwrite=True)
+        results.append((skill_name, rc))
+    failed = [name for name, rc in results if rc != 0]
+    if failed:
+        print(f"ERROR: Failed to install: {', '.join(failed)}", file=sys.stderr)
+        return 1
     return 0
 
 
@@ -194,3 +258,4 @@ def install_agent(
     shutil.copy2(src, dest)
     print(f"Installed '{agent_name}' → {dest}")
     return 0
+

@@ -24,7 +24,7 @@ Observation: <result returned by the tool>
 Repeat as needed. When you have enough information, end with:
 ```
 Thought: I now have enough information to answer.
-Final Answer: <your answer in 1–3 sentences, citing which search results you used>
+Final Answer: <your answer in 1-3 sentences, citing which search results you used>
 ```
 
 Question: {{QUESTION}}
@@ -48,4 +48,4 @@ The question requires a current figure that may not be in Claude's training data
 
 ## When to escalate
 
-If answering requires more than 5–6 search-observe cycles → break the question into sub-questions and use DSP (Technique 14) to structure the multi-hop retrieval. If no search tool is available → switch to RAG (Technique 10) with a pre-built document index.
+If answering requires more than 5-6 search-observe cycles → break the question into sub-questions and use DSP (Technique 14) to structure the multi-hop retrieval. If no search tool is available → switch to RAG (Technique 10) with a pre-built document index.

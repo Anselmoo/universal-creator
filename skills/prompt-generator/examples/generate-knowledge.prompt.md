@@ -31,7 +31,7 @@ Facts:
 ## Step 2 — Answer using those facts
 
 Using only the facts you listed above (reference them by number), answer the question
-in 3–5 sentences at a level appropriate for a first-year university student.
+in 3-5 sentences at a level appropriate for a first-year university student.
 
 If a ⚠️ fact was necessary for your answer, state explicitly that the answer
 relies on an uncertain premise.

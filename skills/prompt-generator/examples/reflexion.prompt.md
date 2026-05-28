@@ -24,10 +24,10 @@ Write a {{WORD_COUNT}}-word essay on the following topic.
 
 ## Stage 2 — Evaluate against criteria
 
-Score the draft 1–5 on each criterion. For each criterion scoring 3 or below,
+Score the draft 1-5 on each criterion. For each criterion scoring 3 or below,
 write one specific sentence describing what to fix.
 
-| Criterion | Score (1–5) | Required fix (if ≤ 3) |
+| Criterion | Score (1-5) | Required fix (if ≤ 3) |
 |-----------|------------|----------------------|
 | Clear thesis stated in intro | | |
 | Each paragraph has one main idea | | |
@@ -45,7 +45,7 @@ write one specific sentence describing what to fix.
 ## Stage 3 — Revise
 
 Rewrite the essay, addressing every required fix identified in Stage 2.
-Do not change sections that scored 4–5 unless fixing a required fix requires it.
+Do not change sections that scored 4-5 unless fixing a required fix requires it.
 
 After the revision, list what changed in bullet points:
 - Changed: ...

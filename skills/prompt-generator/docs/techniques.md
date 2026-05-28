@@ -19,7 +19,7 @@ You are a <role>.
 
 ## Rung 2 — Few-shot
 
-Provide 3–5 input/output examples inside `<example>` tags.
+Provide 3-5 input/output examples inside `<example>` tags.
 
 ```xml
 <examples>
@@ -240,7 +240,7 @@ You are solving: <problem>
 
 Generate 3 distinct high-level approaches (branches). For each branch:
 1. Describe the approach in 1-2 sentences.
-2. Score it on a 1–10 scale for: feasibility, effort, and risk.
+2. Score it on a 1-10 scale for: feasibility, effort, and risk.
 3. Identify the biggest unknown or blocker.
 
 After evaluating all branches, select the best one and explain why.
@@ -316,7 +316,7 @@ Evaluation criterion: <how to score output quality — e.g., "shorter is better"
 Generate 5 distinct system prompt candidates for this task. Each candidate
 should take a different approach (different tone, structure, or instruction style).
 
-After generating all 5, evaluate each against the criterion and assign a score 0–10.
+After generating all 5, evaluate each against the criterion and assign a score 0-10.
 Output: the highest-scoring prompt in full, followed by your reasoning.
 ```
 
@@ -332,7 +332,7 @@ Annotate examples where the model is most uncertain, then add those as few-shot 
 
 ```
 Step 1 — Identify uncertainty:
-For each input below, answer the question AND provide a confidence score (0–100%).
+For each input below, answer the question AND provide a confidence score (0-100%).
 Flag any answer with confidence below 70%.
 
 Inputs: [list of candidate inputs]
@@ -451,7 +451,7 @@ Step 4 — State your final answer.
 
 ## Advanced Technique 18 — Graph-prompting
 
-Inject a knowledge graph as structured triples (subject–relation–object) to ground reasoning in explicit relationships.
+Inject a knowledge graph as structured triples (subject-relation-object) to ground reasoning in explicit relationships.
 
 ```
 Use the following knowledge graph facts to answer the question.

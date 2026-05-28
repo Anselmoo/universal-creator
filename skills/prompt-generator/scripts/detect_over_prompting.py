@@ -5,7 +5,7 @@ Counts ALL-CAPS emphasis words (ALWAYS, NEVER, CRITICAL, MUST, IMPORTANT,
 REMEMBER, FORBIDDEN, WARNING, NOTE) per 100 words and classifies the result:
 
   - density ≤ 1 / 100 words → clean
-  - density 1–3 / 100 words → borderline
+    - density 1-3 / 100 words → borderline
   - density > 3 / 100 words → over-prompted
 
 Also flags specific anti-pattern phrases that are rarely needed in well-written
