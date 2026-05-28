@@ -1,0 +1,23 @@
+{
+    "skill": "agent-generator",
+    "version": "1.0",
+    "iterations": [
+        {
+            "version": "1.0",
+            "date": "2026-05-01",
+            "status": "initial",
+            "notes": "First production version. Covers role-contract definition, tool matrix, system prompt body, .agent.md frontmatter rules, handoff criteria, and quality checklist. Three eval scenarios: code-reviewer (happy path), god-agent guard, and scope-repair loop.",
+            "known_gaps": [
+                "No example of an agent that orchestrates other agents (delegation pattern)",
+                "user-invocable: false option not demonstrated in any example",
+                "Confirmation-threshold guidance not yet linked to a concrete example"
+            ],
+            "improvements_needed": [
+                "Add orchestrator-agent example showing how to delegate to sub-agents",
+                "Add second example demonstrating user-invocable: false pattern",
+                "Link tool-matrix table to a real .agent.md with tools frontmatter filled"
+            ],
+            "observations": []
+        }
+    ]
+}

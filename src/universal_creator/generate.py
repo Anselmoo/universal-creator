@@ -91,7 +91,6 @@ def scaffold_skill(
             try:
                 from universal_creator.install import get_default_skill_output_dir
 
-
                 default_path = get_default_skill_output_dir(host, scope, name)
                 output_dir = str(default_path)
             except Exception:

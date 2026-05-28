@@ -1,0 +1,23 @@
+{
+    "skill": "prompt-generator",
+    "version": "1.0",
+    "iterations": [
+        {
+            "version": "1.0",
+            "date": "2026-05-01",
+            "status": "initial",
+            "notes": "First production version. Covers five-rung escalation ladder (zero-shot → few-shot → CoT → chaining → ReAct), success-criteria-first discipline, context budget controls, output determinism, and hallucination-reduction cues. Three eval scenarios: sentiment classification, grounded QA, over-prompting repair.",
+            "known_gaps": [
+                "No eval scenario for prompt chaining (rung 4)",
+                "ReAct pattern has docs reference but no worked example in examples/",
+                "Context budget guidance lacks concrete token-count thresholds"
+            ],
+            "improvements_needed": [
+                "Add chaining example: extract-then-summarize two-stage prompt file",
+                "Add ReAct example with tool_use interleaving",
+                "Add numeric token-budget table to docs/techniques.md (concise/medium/long tiers)"
+            ],
+            "observations": []
+        }
+    ]
+}

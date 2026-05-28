@@ -85,7 +85,9 @@ def _agent_host_paths() -> dict[str, dict[str, Path]]:
     }
 
 
-def get_default_skill_output_dir(host: str, scope: str, name: str | None = None) -> Path:
+def get_default_skill_output_dir(
+    host: str, scope: str, name: str | None = None
+) -> Path:
     """Return the default relative output directory for scaffolding a skill.
 
     This centralizes the mapping used by CLI scaffolders so hosts agree on where
@@ -132,11 +134,14 @@ def _read_skill_dependencies(skill_src: Path) -> list[str]:
         if len(parts) < 3:
             return []
         import re
+
         # Simple key: list parser for the dependencies field (avoids a hard yaml dep here)
         # Format expected:
         #   dependencies:
         #     - shared
-        match = re.search(r"^dependencies:\s*\n((?:\s+-\s+\S+\n?)+)", parts[1], re.MULTILINE)
+        match = re.search(
+            r"^dependencies:\s*\n((?:\s+-\s+\S+\n?)+)", parts[1], re.MULTILINE
+        )
         if not match:
             return []
         items = re.findall(r"^\s+-\s+(\S+)", match.group(1), re.MULTILINE)
@@ -258,4 +263,3 @@ def install_agent(
     shutil.copy2(src, dest)
     print(f"Installed '{agent_name}' → {dest}")
     return 0
-

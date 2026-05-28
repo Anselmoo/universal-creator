@@ -66,13 +66,21 @@ def cmd_new_skill(
     ] = "claude",
     scope: Annotated[str, typer.Option("--scope", help="local | global")] = "local",
     output_dir: Annotated[
-        str | None, typer.Option("--output-dir", help="Parent dir (default: host-specific)")
+        str | None,
+        typer.Option("--output-dir", help="Parent dir (default: host-specific)"),
     ] = None,
     ask_location: Annotated[
-        bool, typer.Option("--ask-location/--no-ask-location", help="Ask where to write the skill interactively")
+        bool,
+        typer.Option(
+            "--ask-location/--no-ask-location",
+            help="Ask where to write the skill interactively",
+        ),
     ] = False,
     remember: Annotated[
-        bool, typer.Option("--remember/--no-remember", help="Remember chosen location for next time")
+        bool,
+        typer.Option(
+            "--remember/--no-remember", help="Remember chosen location for next time"
+        ),
     ] = False,
     overwrite: Annotated[
         bool, typer.Option("--overwrite/--no-overwrite", help="Replace existing skill")
@@ -126,7 +134,11 @@ def cmd_new_skill(
         raise typer.Exit(1)
 
     # Pass host/scope through so scaffold_skill can derive host-aware defaults
-    raise typer.Exit(scaffold_skill(cfg.name, cfg.mode, cfg.output_dir, cfg.overwrite, host=host, scope=scope))
+    raise typer.Exit(
+        scaffold_skill(
+            cfg.name, cfg.mode, cfg.output_dir, cfg.overwrite, host=host, scope=scope
+        )
+    )
 
 
 # ── install ───────────────────────────────────────────────────────────────────
@@ -153,7 +165,9 @@ def cmd_install(
         raise typer.Exit(install_all(host, scope, Path.cwd()))
 
     if not skill:
-        typer.echo("Error: provide --skill NAME or use --all to install every skill", err=True)
+        typer.echo(
+            "Error: provide --skill NAME or use --all to install every skill", err=True
+        )
         raise typer.Exit(1)
 
     from universal_creator.install import install_skill

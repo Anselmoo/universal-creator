@@ -1,0 +1,87 @@
+{
+    "skill": "agent-generator",
+    "version": "1.0",
+    "graded_scenarios": [
+        {
+            "scenario_id": "agent-happy-path",
+            "assertions": [
+                {
+                    "id": "g-agent-1",
+                    "assertion": "Output is a valid .agent.md file with YAML frontmatter",
+                    "evidence": "File begins with '---' and includes 'name', 'description', 'tools' fields",
+                    "required": true
+                },
+                {
+                    "id": "g-agent-2",
+                    "assertion": "Description is written in third person",
+                    "evidence": "Description does not use 'I', 'my', 'me', or 'we'",
+                    "required": true
+                },
+                {
+                    "id": "g-agent-3",
+                    "assertion": "Tools list contains only read operations",
+                    "evidence": "Tools include read_file/grep_search but exclude write_file, run_in_terminal, etc.",
+                    "required": true
+                },
+                {
+                    "id": "g-agent-4",
+                    "assertion": "Mission statement is one imperative sentence",
+                    "evidence": "Body opens with a single imperative-verb sentence defining the agent's purpose",
+                    "required": true
+                },
+                {
+                    "id": "g-agent-5",
+                    "assertion": "Non-goals section explicitly excludes file modification",
+                    "evidence": "Body contains 'Non-goals' or 'Does not' section mentioning file changes",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "scenario_id": "agent-edge-case-god-agent",
+            "assertions": [
+                {
+                    "id": "g-god-1",
+                    "assertion": "Skill identifies the god-agent anti-pattern",
+                    "evidence": "Output explicitly names or describes the over-broad role problem",
+                    "required": true
+                },
+                {
+                    "id": "g-god-2",
+                    "assertion": "Skill suggests splitting into specialized agents",
+                    "evidence": "Output proposes two or more named sub-agents with distinct roles",
+                    "required": true
+                },
+                {
+                    "id": "g-god-3",
+                    "assertion": "No single monolithic .agent.md is produced",
+                    "evidence": "Output does not contain a single frontmatter block listing all four capabilities",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "scenario_id": "agent-repair-missing-scope",
+            "assertions": [
+                {
+                    "id": "g-repair-1",
+                    "assertion": "Skill identifies all missing required fields",
+                    "evidence": "Output lists: non-goals, output format, completion criteria, tool list",
+                    "required": true
+                },
+                {
+                    "id": "g-repair-2",
+                    "assertion": "Skill asks clarifying questions before rewriting",
+                    "evidence": "Output contains questions about purpose, tools, or scope",
+                    "required": true
+                },
+                {
+                    "id": "g-repair-3",
+                    "assertion": "Rewritten description is in third person",
+                    "evidence": "No first-person pronouns in the improved description field",
+                    "required": true
+                }
+            ]
+        }
+    ]
+}

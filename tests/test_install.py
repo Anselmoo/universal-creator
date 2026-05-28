@@ -130,3 +130,16 @@ class InstallTargetResolutionTests(unittest.TestCase):
                 return_value=[root],
             ):
                 self.assertEqual(list_bundled_agents(), ["primitive-selector"])
+
+    def test_repository_bundle_includes_planning_suite_agents(self) -> None:
+        bundled = set(list_bundled_agents())
+        self.assertTrue(
+            {
+                "primitive-selector",
+                "universal-plan",
+                "universal-explore",
+                "artifact-router",
+                "prompt-strategist",
+                "validation-reviewer",
+            }.issubset(bundled)
+        )

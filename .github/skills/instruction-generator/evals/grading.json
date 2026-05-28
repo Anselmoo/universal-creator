@@ -1,0 +1,93 @@
+{
+    "skill": "instruction-generator",
+    "version": "1.0",
+    "graded_scenarios": [
+        {
+            "scenario_id": "instruction-happy-path",
+            "assertions": [
+                {
+                    "id": "g-inst-1",
+                    "assertion": "File has applyTo: '**/*.ts' in frontmatter",
+                    "evidence": "YAML frontmatter contains 'applyTo' field scoped to TypeScript files",
+                    "required": true
+                },
+                {
+                    "id": "g-inst-2",
+                    "assertion": "All rules are imperative and verifiable",
+                    "evidence": "Rules use 'Use', 'Avoid', 'Always', 'Never' — not 'should', 'try', 'prefer'",
+                    "required": true
+                },
+                {
+                    "id": "g-inst-3",
+                    "assertion": "Recommended location is .github/instructions/ (workspace scope)",
+                    "evidence": "Output mentions workspace-level placement in .github/instructions/",
+                    "required": false
+                },
+                {
+                    "id": "g-inst-4",
+                    "assertion": "Rule count is concise (under 20 lines of rules)",
+                    "evidence": "Rules section has 20 or fewer bullet points or statements",
+                    "required": false
+                }
+            ]
+        },
+        {
+            "scenario_id": "instruction-edge-case-vague-rule",
+            "assertions": [
+                {
+                    "id": "g-vague-1",
+                    "assertion": "Skill rejects the vague rule as unverifiable",
+                    "evidence": "Output explicitly identifies 'write good, clean code' as too vague",
+                    "required": true
+                },
+                {
+                    "id": "g-vague-2",
+                    "assertion": "Skill asks what specific behavior is intended",
+                    "evidence": "Output asks one or more clarifying questions about concrete expectations",
+                    "required": true
+                },
+                {
+                    "id": "g-vague-3",
+                    "assertion": "Skill offers concrete rewrites as options",
+                    "evidence": "Output proposes at least one verifiable rule (e.g., max function length, naming pattern)",
+                    "required": true
+                },
+                {
+                    "id": "g-vague-4",
+                    "assertion": "Original vague rule is not emitted unchanged",
+                    "evidence": "Output does not contain 'write good, clean code' as a final instruction rule",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "scenario_id": "instruction-repair-contradiction",
+            "assertions": [
+                {
+                    "id": "g-conflict-1",
+                    "assertion": "Skill checks for or asks about existing conflicting instructions",
+                    "evidence": "Output asks about existing rules before adding the new one",
+                    "required": true
+                },
+                {
+                    "id": "g-conflict-2",
+                    "assertion": "Contradiction is flagged if conflicting rule exists",
+                    "evidence": "If context shows 'named exports only', output flags the conflict explicitly",
+                    "required": true
+                },
+                {
+                    "id": "g-conflict-3",
+                    "assertion": "User is asked to confirm which rule wins",
+                    "evidence": "Output asks which rule should take precedence before writing",
+                    "required": true
+                },
+                {
+                    "id": "g-conflict-4",
+                    "assertion": "Contradicting rule is not silently added",
+                    "evidence": "Output does not emit a final instruction file with 'default exports' without resolution",
+                    "required": true
+                }
+            ]
+        }
+    ]
+}

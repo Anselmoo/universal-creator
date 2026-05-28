@@ -1,0 +1,109 @@
+{
+    "_comment": "Copy and paste the relevant block into .claude/settings.json (project) or ~/.claude/settings.json (user).",
+    "EXAMPLE_1_notify_on_idle": {
+        "hooks": {
+            "Notification": [
+                {
+                    "matcher": "idle_prompt",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": "osascript -e 'display notification \"Claude is waiting for input\" with title \"Claude Code\"'"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "EXAMPLE_2_auto_format_after_edit": {
+        "hooks": {
+            "PostToolUse": [
+                {
+                    "matcher": "Edit|Write",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": "jq -r '.tool_input.path // empty' | xargs -I{} prettier --write {} 2>/dev/null || true"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "EXAMPLE_3_block_protected_file": {
+        "hooks": {
+            "PreToolUse": [
+                {
+                    "matcher": "Edit|Write",
+                    "if": "tool_input.path contains '.env'",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": "echo '{\"permissionDecision\":{\"behavior\":\"deny\",\"message\":\".env files are protected. Edit them manually.\"}}'"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "EXAMPLE_4_reinject_context_after_compaction": {
+        "hooks": {
+            "SessionStart": [
+                {
+                    "matcher": "compact",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": "echo 'Reminder: use Bun not npm. Run bun test before committing. See CONTRIBUTING.md for conventions.'"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "EXAMPLE_5_audit_config_changes": {
+        "hooks": {
+            "ConfigChange": [
+                {
+                    "matcher": "",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": "jq -c '{timestamp: now | todate, source: .source, file: .file_path}' >> ~/claude-config-audit.log"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "EXAMPLE_6_verify_tests_before_stop": {
+        "hooks": {
+            "Stop": [
+                {
+                    "hooks": [
+                        {
+                            "type": "prompt",
+                            "prompt": "Check if all requested tasks are complete and tests pass. If not, respond with {\"ok\": false, \"reason\": \"what remains to be done\"}."
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "EXAMPLE_7_approve_specific_command": {
+        "hooks": {
+            "PreToolUse": [
+                {
+                    "matcher": "Bash",
+                    "if": "tool_input.command starts_with 'bun test'",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": "echo '{\"permissionDecision\":{\"behavior\":\"allow\"}}'"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
