@@ -57,6 +57,15 @@ agent tool policies, or implement the downstream task.
   naming the out-of-scope item and suggest the appropriate agent or next step
   instead of producing a strategy brief
 
+## Session setup (run first, before selecting a technique)
+
+1. Call `#tool:serena/list_memories` to see what prior strategy briefs exist.
+2. Call `#tool:serena/read_memory` on any prior brief whose key matches or
+   overlaps the current downstream task; reuse or extend it via
+   `#tool:serena/edit_memory` instead of producing a fresh duplicate.
+3. Call `#tool:serena/find_implementations` to look for existing downstream
+   workers or prompt files that already implement the target pattern.
+
 ## Strategy rules
 
 - Start with the lowest rung that satisfies the task

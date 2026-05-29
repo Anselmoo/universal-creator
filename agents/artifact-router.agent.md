@@ -41,7 +41,7 @@ and delegation target.
 - If the follow-up need is missing or too vague to assess, do not produce a
   Routing decision. Instead, use `#tool:vscode/askQuestions` to ask exactly one
   focused question, then stop. Reuse the same one-question pattern when two or
-  more decision rules match and the disambiguator does not resolve the tie.
+  more decision rules match and the tie-breaker rule (rule 7) does not resolve the tie.
   If `#tool:vscode/askQuestions` is unavailable, state the missing scope items
   under **Blockers or questions** and return `Artifact: none`.
 - Return a concrete next step that the planner can delegate or document
@@ -51,6 +51,16 @@ and delegation target.
 - Generating the chosen artifact itself
 - Producing full implementation plans for the entire project
 - Reviewing plan quality after the routing decision is made
+
+## Pre-routing checks (run before applying decision rules)
+
+1. Call `#tool:serena/search_for_pattern` with the goal keywords against the
+   candidate artifact directories (`agents/*.agent.md`, `skills/*/SKILL.md`,
+   `prompts/*.prompt.md`, `hooks/*`) to see if an existing artifact already
+   covers the need.
+2. If a candidate exists, surface it under **Required inputs** as
+   `Existing artifact: <path>` and prefer reuse over generation in the routing
+   decision.
 
 ## Decision rules
 

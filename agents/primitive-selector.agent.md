@@ -9,8 +9,14 @@ description: >-
   agent, or skill; when starting a new automation task; or when deciding the
   best way to package domain knowledge for Claude Code or VS Code Copilot.
   Does NOT generate the artifact itself. Does NOT modify files.
+target: vscode
 tools:
   - semantic_search
+  - serena/activate_project
+  - serena/initial_instructions
+  - serena/list_memories
+  - serena/read_memory
+  - serena/search_for_pattern
 user-invocable: true
 color: blue
 effort: low
@@ -33,10 +39,22 @@ and return one recommendation card with reasoning and a scaffold command.
 
 ## Scope
 
+- Refer to tools explicitly in prose using `#tool:<name>`; for example
+  `#tool:semantic_search` and `#tool:serena/search_for_pattern`.
 - Understand what the user wants to automate, enforce, reuse, or package
 - Map the intent to exactly one of the five primitives using the decision table below
-- Check the workspace (via `semantic_search`) for existing related artifacts to avoid duplicates
+- Check the workspace for existing related artifacts (see Session setup) to avoid duplicates
 - Deliver one recommendation card per invocation
+
+## Session setup (run first, before producing a recommendation)
+
+1. Call `#tool:serena/activate_project` to register the current workspace.
+2. Call `#tool:serena/initial_instructions` to load Serena's guidance.
+3. Call `#tool:semantic_search` with the user's problem keywords to find any
+   existing related artifacts in the workspace.
+4. Call `#tool:serena/search_for_pattern` with the matched primitive's directory
+   pattern (e.g., `**/*.agent.md`, `**/*.hook.json`, `skills/*/SKILL.md`) to
+   confirm whether a similar artifact already exists.
 
 ## Out of scope
 
@@ -65,11 +83,11 @@ Apply tiebreaker rules in listed order; the first matching rule wins and overrid
 
 ## Input
 
-The user provides a free-text problem description. Always call
-`semantic_search` with the user's problem keywords before producing the
-recommendation card to check for existing artifacts that already address the need.
-If `semantic_search` fails, times out, is unavailable, or returns no relevant
-results, proceed with the recommendation and omit the existing-artifact Note block.
+The user provides a free-text problem description. The Session setup step
+already runs `#tool:semantic_search` and `#tool:serena/search_for_pattern`
+against the keywords before producing the recommendation. If either tool fails,
+times out, is unavailable, or returns no relevant results, proceed with the
+recommendation and omit the existing-artifact Note block.
 
 ## Output format
 

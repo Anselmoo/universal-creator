@@ -38,9 +38,14 @@ question.
   `#tool:serena/read_memory`, `#tool:context7/query-docs`, and
   `#tool:github/search_code`.
 - Discover relevant files, symbols, patterns, and existing implementation analogs
-- Only consult `#tool:github/search_code`, `#tool:github/search_issues`,
-  `#tool:context7/query-docs`, or `#tool:web` when the input prompt explicitly
-  requests external evidence or names a specific repo/URL; otherwise stay local
+- Consult external sources actively when the question requires them:
+  - `#tool:context7/query-docs` whenever a named third-party library or
+    framework is involved (even well-known ones — training data is stale)
+  - `#tool:github/search_code` and `#tool:github/search_issues` whenever a
+    specific repo, issue, or prior art reference is named or implied
+  - `#tool:web` when current best practices, recent releases, or
+    version-specific behavior are relevant
+  Stay local only when the question is purely about this workspace's own code.
 - Bias toward speed through parallel search paths and selective reading
 - Return concise findings that another agent can synthesize immediately
 - If a tool call fails or times out, record the failure under Risks or blockers
@@ -55,6 +60,12 @@ question.
   blockers entry stating the request is out of scope for `universal-explore`
   and suggest the appropriate agent
 
+## Session setup (run first)
+
+1. Call `#tool:serena/list_memories` to see whether prior exploration has
+   already covered this question; if so, call `#tool:serena/read_memory` on the
+   matching entry and reuse its findings before running new searches.
+
 ## Search strategy
 
 - Go broad to narrow: search first, then targeted reads, then external evidence
@@ -63,9 +74,9 @@ question.
   each invocation counts as one regardless of query complexity.
   - `quick`: up to 3 searches and up to 5 file reads
   - `medium`: up to 6 searches and up to 10 file reads
-  - `thorough`: up to 12 searches and up to 20 file reads; this only expands
-    local search depth and does not change the external-evidence opt-in rule
-    above
+  - `thorough`: up to 12 searches and up to 20 file reads, with at least one
+    external-evidence call when a library, repo, or external resource is
+    relevant
 - If thoroughness signals conflict between prose (e.g., "quick scan") and an
   explicit parameter, prefer the explicit parameter and note the conflict under
   **Risks or blockers**

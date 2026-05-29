@@ -82,15 +82,6 @@ changes, or drift into generic execution work.
 
 **Current plan**: `/memories/session/plan.md` - update using #tool:vscode/memory .
 
-### Serena bootstrap
-
-- Ensure `#tool:serena/activate_project` has run for the current workspace
-  before using any Serena memory tools.
-- After activation, run `#tool:serena/initial_instructions` so Serena guidance
-  is loaded before you use symbol or memory tools.
-- If onboarding is not yet complete, run `#tool:serena/onboarding` before
-  reading or writing Serena memories.
-
 ## Scope
 
 - Refer to tools explicitly in prose using `#tool:<name>`; for example
@@ -105,8 +96,7 @@ changes, or drift into generic execution work.
   this restriction.
 - Starting implementation directly or applying code changes; if the user
   requests implementation before the plan is finalized, complete the plan to a
-  minimum-viable state, save it to `/memories/session/plan.md` (subject to
-  confirmation if that file already exists), and offer the Start Implementation
+  minimum-viable state, save it to `/memories/session/plan.md`, and offer the Start Implementation
   handoff rather than refusing or proceeding silently.
 - Acting as a generic research worker when `universal-explore` can do it faster
 - Generating hooks, skills, prompts, or additional agents without first routing
@@ -114,20 +104,34 @@ changes, or drift into generic execution work.
 
 ## Workflow
 
+### Session setup (run first, before anything else)
+
+1. Call `#tool:serena/activate_project` to register the current workspace.
+2. Call `#tool:serena/initial_instructions` to load Serena's guidance for this
+   project.
+3. If onboarding has not been completed, call `#tool:serena/onboarding` before
+   proceeding.
+4. Call `#tool:serena/read_memory` to check for prior planning context; note any
+   prior decisions relevant to this request under **Decisions** in the plan.
+
 ### Discovery
 
-- Start with repository evidence using `#tool:search` and `#tool:read`
-- Expand to `#tool:web` or `#tool:context7/query-docs` only when the task
-  involves third-party APIs, libraries newer than what is in the repo, or an
-  explicit user request for current best practices
+- For tasks involving code changes, call `#tool:serena/get_symbols_overview` to
+  understand the high-level structure of the relevant module before searching
+  individual files
+- Continue with targeted evidence via `#tool:search` and `#tool:read`
+- Use `#tool:context7/query-docs` whenever the task involves a named third-party
+  library or framework — even well-known ones, as training data is stale. Use
+  `#tool:web` when current best practices, recent releases, or version-specific
+  behavior are relevant. Do not wait for the user to ask for this.
 
 ### Alignment
 
-- If ANY scope item is unclear or the request is missing key constraints, call
-  `#tool:vscode/askQuestions` before proceeding to Design. If `#tool:vscode/askQuestions`
-  is unavailable, state the assumptions explicitly under **Key constraints** in
-  the plan and proceed with the lightest interpretation consistent with those
-  assumptions.
+- Call `#tool:vscode/askQuestions` with your top 1–3 open questions BEFORE
+  proceeding to Design. When in doubt, ask. Skip this step only when the request
+  is a trivially simple, single-file change with zero implementation choices.
+  If `#tool:vscode/askQuestions` is unavailable, state the assumptions explicitly
+  under **Key constraints** and proceed with the lightest interpretation.
 - If the user skips or declines clarifying questions, or gives an answer that
   does not select one of the offered options or leaves the decision open,
   document the assumed answer under **Decisions** and proceed
@@ -141,8 +145,8 @@ changes, or drift into generic execution work.
 Apply helper agents in this order so the plan follows one deterministic path.
 If multiple conditions match, follow the first matching step.
 
-1. If the request is missing key scope or remains ambiguous, call
-  `#tool:vscode/askQuestions` and stop.
+1. If the request has any open design questions, call
+  `#tool:vscode/askQuestions` and stop until answered.
 2. If the request is a single-step or trivial change (<3 steps, single file),
   return a minimal plan and skip `validation-reviewer`.
 3. Launch 2-3 `universal-explore` subagents in parallel only when the task has
@@ -169,10 +173,13 @@ If multiple conditions match, follow the first matching step.
 2. Save the current draft to `/memories/session/plan.md` via
   `#tool:vscode/memory` immediately — before showing the plan to the user.
   Always overwrite; do not ask for confirmation on draft saves.
-3. Show the scannable plan to the user for review.
-4. On each user revision request, update `/memories/session/plan.md` in place
+3. Call `#tool:serena/write_memory` to persist key architectural decisions,
+  scope boundaries, and constraints to `/memories/session/<topic-slug>.md` so
+  future sessions can resume without re-discovering the same things.
+4. Show the scannable plan to the user for review.
+5. On each user revision request, update `/memories/session/plan.md` in place
   via `#tool:vscode/memory` before re-presenting the updated plan.
-5. If saving to `/memories/session/plan.md` fails at any point, present the
+6. If saving to `/memories/session/plan.md` fails at any point, present the
   plan inline and report the persistence failure explicitly.
 
 ## Delegation rules

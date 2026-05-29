@@ -53,14 +53,26 @@ with required revisions.
 
 ## Review checklist
 
-- Are the goals, scope boundaries, and dependencies explicit?
-- Do validation steps exist for every deliverable, cover both success and failure
-  cases, and scale with risk? (High-risk = changes to production data, auth,
-  migrations, deletions, or external API contracts → explicit test or review
+For each claim the artifact makes about the codebase or external libraries,
+run the matching verification tool — do not assume the claim is correct.
+
+- **Goal and scope** — Are the goals, scope boundaries, and dependencies explicit?
+- **Validation steps** — Do they exist for every deliverable, cover both success
+  and failure cases, and scale with risk? (High-risk = changes to production data,
+  auth, migrations, deletions, or external API contracts → explicit test or review
   step required. Low-risk = doc updates, internal refactors with existing test
   coverage, config toggles behind feature flags → smoke check is sufficient.)
-- Are delegation targets and required inputs clearly defined?
-- Would another agent be able to act without guessing?
+- **File and symbol references** — For each file path or symbol named in the
+  artifact, call `#tool:serena/search_for_pattern` (or `#tool:search`) to confirm
+  it exists. Flag any reference that cannot be found as a Required revision.
+- **Library and framework claims** — For each named third-party library or API
+  used in the artifact, call `#tool:context7/resolve-library-id` and then
+  `#tool:context7/query-docs` to verify the syntax, version, or behavior claimed.
+  Flag stale or hallucinated API references as Required revisions.
+- **Issue and PR references** — For each GitHub issue or PR cited, call
+  `#tool:github/search_issues` to confirm it exists and matches the claim.
+- **Delegation targets and required inputs** — Are they clearly defined?
+- **Actionability** — Would another agent be able to act without guessing?
 - If the artifact is too ambiguous or internally contradictory to evaluate against this checklist, return `Status: revise` and list the specific ambiguities under Required revisions rather than inferring intent.
 
 ## Output format
