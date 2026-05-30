@@ -66,13 +66,21 @@ def cmd_new_skill(
     ] = "claude",
     scope: Annotated[str, typer.Option("--scope", help="local | global")] = "local",
     output_dir: Annotated[
-        str | None, typer.Option("--output-dir", help="Parent dir (default: host-specific)")
+        str | None,
+        typer.Option("--output-dir", help="Parent dir (default: host-specific)"),
     ] = None,
     ask_location: Annotated[
-        bool, typer.Option("--ask-location/--no-ask-location", help="Ask where to write the skill interactively")
+        bool,
+        typer.Option(
+            "--ask-location/--no-ask-location",
+            help="Ask where to write the skill interactively",
+        ),
     ] = False,
     remember: Annotated[
-        bool, typer.Option("--remember/--no-remember", help="Remember chosen location for next time")
+        bool,
+        typer.Option(
+            "--remember/--no-remember", help="Remember chosen location for next time"
+        ),
     ] = False,
     overwrite: Annotated[
         bool, typer.Option("--overwrite/--no-overwrite", help="Replace existing skill")
@@ -126,7 +134,11 @@ def cmd_new_skill(
         raise typer.Exit(1)
 
     # Pass host/scope through so scaffold_skill can derive host-aware defaults
-    raise typer.Exit(scaffold_skill(cfg.name, cfg.mode, cfg.output_dir, cfg.overwrite, host=host, scope=scope))
+    raise typer.Exit(
+        scaffold_skill(
+            cfg.name, cfg.mode, cfg.output_dir, cfg.overwrite, host=host, scope=scope
+        )
+    )
 
 
 # ── install ───────────────────────────────────────────────────────────────────
@@ -134,14 +146,44 @@ def cmd_new_skill(
 
 @app.command("install")
 def cmd_install(
-    skill: Annotated[str, typer.Option("--skill", "-s", help="Skill name to install")],
+    skill: Annotated[
+        str | None, typer.Option("--skill", "-s", help="Skill name to install")
+    ] = None,
+    all_skills: Annotated[
+        bool, typer.Option("--all", "-a", help="Install all bundled skills")
+    ] = False,
     host: Annotated[
         str, typer.Option("--host", help="claude | copilot | gemini | codex")
     ] = "copilot",
     scope: Annotated[str, typer.Option("--scope", help="local | global")] = "local",
     overwrite: Annotated[bool, typer.Option("--overwrite/--no-overwrite")] = False,
+    force_shared: Annotated[
+        bool,
+        typer.Option(
+            "--force-shared/--no-force-shared",
+            help=(
+                "Override the per-file edit protection on the `shared` skill "
+                "(examples, trio agents, technique-selector). Use only when "
+                "you want to reset shared/ to bundled content and lose any "
+                "local edits."
+            ),
+        ),
+    ] = False,
 ) -> None:
-    """Install a bundled skill to Claude, Copilot, Gemini, or Codex."""
+    """Install a bundled skill (or all skills) to Claude, Copilot, Gemini, or Codex."""
+    if all_skills:
+        from universal_creator.install import install_all
+
+        raise typer.Exit(
+            install_all(host, scope, Path.cwd(), force_shared=force_shared)
+        )
+
+    if not skill:
+        typer.echo(
+            "Error: provide --skill NAME or use --all to install every skill", err=True
+        )
+        raise typer.Exit(1)
+
     from universal_creator.install import install_skill
     from universal_creator.models import SkillInstallConfig
 
@@ -157,7 +199,14 @@ def cmd_install(
         raise typer.Exit(1)
 
     raise typer.Exit(
-        install_skill(cfg.skill, cfg.host, cfg.scope, Path.cwd(), cfg.overwrite)
+        install_skill(
+            cfg.skill,
+            cfg.host,
+            cfg.scope,
+            Path.cwd(),
+            cfg.overwrite,
+            force_shared=force_shared,
+        )
     )
 
 

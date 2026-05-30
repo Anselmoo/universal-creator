@@ -1,0 +1,40 @@
+{
+    "skill": "prompt-generator",
+    "version": "1.0",
+    "scenarios": [
+        {
+            "id": "prompt-happy-path",
+            "description": "User wants a prompt to classify customer feedback",
+            "query": "Write a prompt that classifies customer feedback as positive, negative, or neutral",
+            "expected_behavior": [
+                "Starts with zero-shot baseline on the escalation ladder",
+                "Output format constraint is explicit (returns one of three labels)",
+                "Technique justification is provided",
+                "Provides one happy-path and one edge-case eval scenario",
+                "Does NOT jump to few-shot without evaluating zero-shot first"
+            ]
+        },
+        {
+            "id": "prompt-edge-case-hallucination",
+            "description": "User needs a prompt that answers questions from a document",
+            "query": "Write a prompt that answers questions about an uploaded PDF",
+            "expected_behavior": [
+                "Includes hallucination-reduction instruction ('based only on provided context')",
+                "Includes 'if not in context, say I don't know'",
+                "Uses CoT or chaining for multi-step extraction if document is long",
+                "Does NOT rely solely on Claude's parametric knowledge"
+            ]
+        },
+        {
+            "id": "prompt-repair-over-prompting",
+            "description": "User has an existing prompt with excessive CRITICAL/ALWAYS overuse",
+            "query": "Improve this prompt: ALWAYS CRITICAL: NEVER do X. IMPORTANT: YOU MUST do Y. REMEMBER: ALWAYS...",
+            "expected_behavior": [
+                "Identifies over-prompting anti-pattern",
+                "Rewrites instructions in normal, clear prose",
+                "Removes redundant ALL-CAPS emphasis",
+                "Output prompt is shorter and clearer than the original"
+            ]
+        }
+    ]
+}

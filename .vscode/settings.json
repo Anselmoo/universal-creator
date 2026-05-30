@@ -1,0 +1,5 @@
+{
+    "chat.experimental.useSkillAdherencePrompt": true,
+    "chat.useNestedAgentsMdFiles": true,
+    "chat.unifiedAgentsBar.enabled": true
+}

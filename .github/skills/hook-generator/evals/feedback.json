@@ -1,0 +1,23 @@
+{
+    "skill": "hook-generator",
+    "version": "1.0",
+    "iterations": [
+        {
+            "version": "1.0",
+            "date": "2026-05-01",
+            "status": "initial",
+            "notes": "First production version. Covers 9 hook events with event-selection table, hook type selection, if-field narrowing guidance, and safety checklist. Three eval scenarios included: happy-path formatter, broad-approval guard, and PostCompact re-injection.",
+            "known_gaps": [
+                "HTTP and MCP tool hook types have no worked examples yet",
+                "No coverage of multi-hook ordering within the same event",
+                "Agent-type hooks have no dedicated example"
+            ],
+            "improvements_needed": [
+                "Add one example using http hook type for webhook notification",
+                "Add event ordering/priority documentation if Claude Code exposes it",
+                "Add a fourth scenario: blocking specific file deletion with PreToolUse + if"
+            ],
+            "observations": []
+        }
+    ]
+}

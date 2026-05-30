@@ -1,0 +1,72 @@
+{
+    "skill": "prompt-generator",
+    "version": "1.0",
+    "description": "Quality delta between Claude without the skill vs with the skill loaded",
+    "scenarios": [
+        {
+            "scenario_id": "prompt-happy-path",
+            "without_skill": {
+                "typical_issues": [
+                    "Jumps to few-shot or CoT without evaluating zero-shot first",
+                    "Output format constraint is implicit or absent",
+                    "No technique justification — pattern chosen arbitrarily",
+                    "No eval scenarios provided with the prompt"
+                ],
+                "quality_rating": "medium"
+            },
+            "with_skill": {
+                "improvements": [
+                    "Zero-shot attempted first per escalation ladder",
+                    "Explicit format constraint (one of three labels) added",
+                    "Technique choice explained with criteria from ladder",
+                    "At least one eval scenario generated alongside prompt"
+                ],
+                "quality_rating": "high"
+            },
+            "quality_delta": "medium",
+            "delta_explanation": "Technique justification and format constraints are consistently absent without skill guidance."
+        },
+        {
+            "scenario_id": "prompt-edge-case-hallucination",
+            "without_skill": {
+                "typical_issues": [
+                    "No grounding instruction — model freely uses parametric knowledge",
+                    "No fallback for missing information",
+                    "Prompt invites confabulation on out-of-context questions"
+                ],
+                "quality_rating": "low"
+            },
+            "with_skill": {
+                "improvements": [
+                    "Explicit grounding instruction added ('based only on provided context')",
+                    "Graceful fallback instruction added",
+                    "Hallucination-reduction checklist applied"
+                ],
+                "quality_rating": "high"
+            },
+            "quality_delta": "high",
+            "delta_explanation": "Grounding instructions are the single highest-value addition for RAG-style prompts."
+        },
+        {
+            "scenario_id": "prompt-repair-over-prompting",
+            "without_skill": {
+                "typical_issues": [
+                    "Over-prompting pattern not recognized",
+                    "Rewrite preserves ALL-CAPS emphasis and redundant repetition",
+                    "Output is equal length or longer than original"
+                ],
+                "quality_rating": "low"
+            },
+            "with_skill": {
+                "improvements": [
+                    "Anti-pattern explicitly named (over-prompting)",
+                    "ALL-CAPS emphasis removed and replaced with clear prose",
+                    "Output is demonstrably shorter and clearer"
+                ],
+                "quality_rating": "high"
+            },
+            "quality_delta": "high",
+            "delta_explanation": "Over-prompting repair is a pattern skill that requires explicit anti-pattern recognition."
+        }
+    ]
+}

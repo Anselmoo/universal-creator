@@ -1,0 +1,23 @@
+{
+    "skill": "instruction-generator",
+    "version": "1.0",
+    "iterations": [
+        {
+            "version": "1.0",
+            "date": "2026-05-01",
+            "status": "initial",
+            "notes": "First production version. Covers scope selection (workspace vs file-level vs user-level), applyTo glob patterns, imperative-rule contract, concise vs extended depth choice, and contradiction detection. Three eval scenarios: TypeScript rules, vague-rule guard, contradiction repair.",
+            "known_gaps": [
+                "No example for user-level cross-workspace instructions",
+                "AGENTS.md format not demonstrated (only copilot-instructions.md and .instructions.md)",
+                "No example showing how to scope instructions to a sub-folder pattern"
+            ],
+            "improvements_needed": [
+                "Add user-level example in templates/instructions-user.md",
+                "Add an AGENTS.md example alongside the existing .instructions.md example",
+                "Add a fourth eval scenario: conflicting rules from two different instruction files"
+            ],
+            "observations": []
+        }
+    ]
+}

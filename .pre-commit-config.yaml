@@ -32,6 +32,18 @@ repos:
   # ── Skill structure validation ───────────────────────────────────────────────
   - repo: local
     hooks:
+      - id: sync-agents
+        name: Sync .github/agents to agents
+        language: python
+        entry: python scripts/sync_agents.py
+        pass_filenames: false
+        always_run: true
+      - id: sync-skills
+        name: Sync skills to .github/skills
+        language: python
+        entry: python scripts/sync_skills.py
+        pass_filenames: false
+        always_run: true
       - id: validate-skills
         name: Validate skill SKILL.md frontmatter
         language: python
