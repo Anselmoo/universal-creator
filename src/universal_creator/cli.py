@@ -157,12 +157,26 @@ def cmd_install(
     ] = "copilot",
     scope: Annotated[str, typer.Option("--scope", help="local | global")] = "local",
     overwrite: Annotated[bool, typer.Option("--overwrite/--no-overwrite")] = False,
+    force_shared: Annotated[
+        bool,
+        typer.Option(
+            "--force-shared/--no-force-shared",
+            help=(
+                "Override the per-file edit protection on the `shared` skill "
+                "(examples, trio agents, technique-selector). Use only when "
+                "you want to reset shared/ to bundled content and lose any "
+                "local edits."
+            ),
+        ),
+    ] = False,
 ) -> None:
     """Install a bundled skill (or all skills) to Claude, Copilot, Gemini, or Codex."""
     if all_skills:
         from universal_creator.install import install_all
 
-        raise typer.Exit(install_all(host, scope, Path.cwd()))
+        raise typer.Exit(
+            install_all(host, scope, Path.cwd(), force_shared=force_shared)
+        )
 
     if not skill:
         typer.echo(
@@ -185,7 +199,14 @@ def cmd_install(
         raise typer.Exit(1)
 
     raise typer.Exit(
-        install_skill(cfg.skill, cfg.host, cfg.scope, Path.cwd(), cfg.overwrite)
+        install_skill(
+            cfg.skill,
+            cfg.host,
+            cfg.scope,
+            Path.cwd(),
+            cfg.overwrite,
+            force_shared=force_shared,
+        )
     )
 
 

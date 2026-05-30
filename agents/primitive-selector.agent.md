@@ -31,6 +31,14 @@ skills:
 Matches a described problem to the correct universal-creator primitive and
 delivers a concrete recommendation card.
 
+## Contract
+
+- **Inputs:** free-text problem description from the user.
+- **Outputs:** one recommendation card (Recommendation / Skill / Why /
+  Scaffold command / Companion primitives / Next step) or a "No match" block.
+- **Preconditions:** none — entry point; runs before `universal-plan`.
+- **Parallel-safe-with:** none (single-shot recommendation).
+
 ## Mission
 
 Analyze the user's problem description, select the single best primitive
@@ -120,6 +128,11 @@ python skills/<skill-name>/scripts/<generator-script>.py \
 
 **Next step:** Invoke the `<skill-name>` skill and follow its ## Workflow.
 ```
+
+If the chosen primitive is `agent`, `prompt`, `skill`, or `hook`, the caller
+should hand off to `universal-plan` next so the scaffolding is wrapped in a
+validated plan. `instruction` primitives can proceed directly to
+`instruction-generator` without a planning step.
 
 If an existing artifact already covers the need, prepend:
 

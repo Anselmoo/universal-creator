@@ -29,7 +29,7 @@ Use the prompt-generator's own examples as technique references. Borrow these pa
 
 - **prompt_path**: Path to the generated `.prompt.md` file
 - **skill_path**: Path to `skills/prompt-generator/SKILL.md`
-- **examples_dir**: Path to the skill's `examples/` directory
+- **examples_dir**: Path to the shared examples directory (`skills/shared/examples/`)
 - **transcript_path**: Optional path to the execution transcript
 - **overprompting_report_path**: Optional path to output from `detect_over_prompting.py`
 - **output_path**: Where to save the fingerprint report JSON

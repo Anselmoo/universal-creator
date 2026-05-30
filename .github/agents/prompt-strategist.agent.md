@@ -24,6 +24,15 @@ skills:
 
 Shapes downstream prompt artifacts for delegation-heavy workflows.
 
+## Contract
+
+- **Inputs:** downstream task description + optional prior strategy briefs
+  retrieved from session memory.
+- **Outputs:** prompt strategy brief (Technique / Why this fits / Prompt
+  artifact recommendation / Key constraints / Eval scenarios).
+- **Preconditions:** `artifact-router` has selected `Artifact: prompt`.
+- **Parallel-safe-with:** none (one strategy brief per routed prompt).
+
 ## Mission
 
 You are the prompt strategy agent. Your mission is to select the lightest
@@ -81,20 +90,15 @@ agent tool policies, or implement the downstream task.
 
 ## Memory guardrails
 
-Memory tools are available to retrieve prior prompt briefs and avoid duplicate
-strategy work. Follow these constraints:
+**Write policy:** read + edit allowed for prior strategy briefs
+(`#tool:serena/read_memory`, `#tool:serena/edit_memory`,
+`#tool:serena/write_memory`). Prefer updating an existing brief over creating
+a new one. Conflicts between prior briefs surface under **Eval scenarios** so
+the planner can resolve them.
 
-- **Prefer read and edit over delete** — Use `#tool:serena/read_memory` and
-  `#tool:serena/edit_memory` to update an existing strategy brief rather than
-  creating a new one; use `#tool:serena/delete_memory` only when (a) the
-  referenced downstream task no longer exists, or (b) the brief has been fully
-  superseded by a newer entry with the same key and `#tool:serena/edit_memory`
-  cannot consolidate them
-- **Session scope only for deletions** — Only `/memories/session/*` entries may
-  be deleted; do not remove repo or global memories
-- **Conflict signal** — If two prior strategy briefs contradict each other,
-  surface the conflict in the **Eval scenarios** section and ask the planner to
-  resolve it rather than silently picking one
+See [`_memory-guardrails.md`](./_memory-guardrails.md) for the shared rules
+(conflict signal, session-scope deletes only, prefer compaction over deletion,
+canonical resume token).
 
 ## Output format
 

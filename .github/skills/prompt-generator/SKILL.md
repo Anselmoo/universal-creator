@@ -5,7 +5,8 @@ description: >-
   prompting techniques: zero-shot, few-shot, chain-of-thought, prompt chaining,
   ReAct, meta-prompting, self-consistency, generate-knowledge, tree-of-thoughts,
   RAG, ART, APE, active-prompt, DSP, PAL, reflexion, multimodal-CoT, and
-  graph-prompting (full catalog: docs/techniques.md; examples: examples/).
+  graph-prompting (full catalog: docs/techniques.md; worked examples live in
+  the shared dependency at skills/shared/examples/).
   Use when the user wants to write a Claude system prompt, create a .prompt.md file,
   improve an existing prompt, choose between prompting techniques, structure
   multi-step reasoning, or apply context-budget-aware prompt engineering.
@@ -14,6 +15,9 @@ description: >-
   agent role definitions (use agent-generator); for workspace instructions (use
   instruction-generator).
 license: "MIT"
+metadata:
+  dependencies:
+    - shared
 ---
 
 # Prompt Generator
@@ -37,7 +41,8 @@ Start at the lowest rung that works. Move up only when lower rungs fail evaluati
 | 5 | **ReAct** | External lookups/tools needed; state changes during task execution |
 
 Full technique catalog (18 entries): [docs/techniques.md](docs/techniques.md)
-Worked examples for every technique: [examples/](examples/)
+Worked examples for every technique: [../shared/examples/](../shared/examples/)
+(installed automatically via the `shared` dependency).
 
 ## Workflow
 
@@ -179,5 +184,6 @@ Deliver:
 2. Technique justification (one sentence: why this rung)
 3. One happy-path and one edge-case eval scenario
 
-See [examples/](examples/) for domain-specific prompt patterns.
+See [../shared/examples/](../shared/examples/) for domain-specific prompt
+patterns (installed via the `shared` dependency).
 Technique reference: [docs/techniques.md](docs/techniques.md)

@@ -27,6 +27,16 @@ skills:
 
 Chooses the most appropriate follow-up artifact type for the planning suite.
 
+## Contract
+
+- **Inputs:** scoped follow-up need + optional existing-artifact context from
+  `universal-plan`.
+- **Outputs:** routing decision (Artifact / Delegate to / Why / Required
+  inputs / Blockers or questions).
+- **Preconditions:** `universal-plan` has produced a scoped follow-up artifact
+  request.
+- **Parallel-safe-with:** none (single routing decision per planner turn).
+
 ## Mission
 
 You are the routing agent. Your mission is to analyze a scoped follow-up need,
@@ -79,7 +89,9 @@ Use this precedence order when more than one rule could apply:
 3. Choose `hook-generator` for lifecycle automation or deterministic policy.
 4. Choose `skill-generator` for reusable artifact-generation capabilities.
 5. Choose `prompt-generator` for reusable task-assignment prompts, execution
-   briefs, or prompt chains.
+   briefs, or prompt chains. When `Artifact: prompt` is selected, the planner
+   then invokes `prompt-strategist` to produce a strategy brief; this router
+   does not delegate to `prompt-strategist` itself.
 6. Choose `agent-generator` when the user needs a bounded, persistent role with
    a dedicated tool policy.
 7. Tie-breaker: choose `skill-generator` only when the capability requires
