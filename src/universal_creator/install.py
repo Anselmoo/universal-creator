@@ -27,6 +27,11 @@ import shutil
 import sys
 from pathlib import Path
 
+from universal_creator.install_helpers import (
+    backup_paths,
+    prompt_confirmation,
+    stage_dir,
+)
 from universal_creator.manifest import (
     MANIFEST_RELATIVE_PATH,
     compute_tree_manifest,
@@ -344,6 +349,63 @@ def _read_skill_dependencies(skill_src: Path) -> list[str]:
         return []
 
 
+def install_entrypoint(
+    name: str,
+    host: str,
+    scope: str,
+    cwd: Path | None = None,
+    overwrite: bool = False,
+    force_shared: bool = False,
+    skip_deps: bool = False,
+    backup: bool = True,
+    interactive: bool = True,
+) -> int:
+    """Unified installer for skills and agents with backup, staging, and overwrite policies."""
+    # Determine if name is a skill or agent
+    bundled_skills = list_bundled_skills()
+    bundled_agents = list_bundled_agents()
+    is_skill = name in bundled_skills
+    is_agent = name in bundled_agents
+    if not (is_skill or is_agent):
+        print(f"ERROR: '{name}' not found as skill or agent.", file=sys.stderr)
+        return 1
+    # Resolve install target
+    if is_skill:
+        target_dir = resolve_target(host, scope, cwd or Path.cwd()) / name
+    else:
+        target_dir = (
+            resolve_agent_target(host, scope, cwd or Path.cwd()) / f"{name}.agent.md"
+        )
+    # Backup if requested and target exists
+    if backup and target_dir.exists():
+        backup_paths([target_dir])
+    # Prompt if not overwrite and exists
+    if target_dir.exists() and not overwrite:
+        if interactive and not prompt_confirmation(f"Overwrite {target_dir}?"):
+            print("Install cancelled by user.")
+            return 1
+    # Use staging for atomic install
+    with stage_dir():
+        if is_skill:
+            rc = install_skill(
+                name,
+                host,
+                scope,
+                cwd,
+                overwrite=True,
+                force_shared=force_shared,
+                skip_deps=skip_deps,
+            )
+        else:
+            rc = install_agent(
+                name, host, scope, cwd, overwrite=True, skip_deps=skip_deps
+            )
+        if rc != 0:
+            print(f"ERROR: Failed to install {name}.", file=sys.stderr)
+            return rc
+    return 0
+
+
 def install_skill(
     skill_name: str,
     host: str,
@@ -351,6 +413,7 @@ def install_skill(
     cwd: Path | None = None,
     overwrite: bool = False,
     force_shared: bool = False,
+    skip_deps: bool = False,
 ) -> int:
     """Copy a bundled skill to the target directory.
 
@@ -384,17 +447,18 @@ def install_skill(
         return _install_shared(src, shared_dest, agents_target, lock_path, force_shared)
 
     # Auto-install dependencies before copying this skill.
-    for dep in _read_skill_dependencies(src):
-        if dep == "shared":
-            dep_rc = install_skill(dep, host, scope, cwd, force_shared=force_shared)
-        else:
-            dep_rc = install_skill(dep, host, scope, cwd, overwrite=True)
-        if dep_rc != 0:
-            print(
-                f"ERROR: Failed to install dependency '{dep}' for '{skill_name}'",
-                file=sys.stderr,
-            )
-            return 1
+    if not skip_deps:
+        for dep in _read_skill_dependencies(src):
+            if dep == "shared":
+                dep_rc = install_skill(dep, host, scope, cwd, force_shared=force_shared)
+            else:
+                dep_rc = install_skill(dep, host, scope, cwd, overwrite=True)
+            if dep_rc != 0:
+                print(
+                    f"ERROR: Failed to install dependency '{dep}' for '{skill_name}'",
+                    file=sys.stderr,
+                )
+                return 1
 
     target_dir = resolve_target(host, scope, cwd_resolved)
     dest = target_dir / skill_name
@@ -419,6 +483,8 @@ def install_all(
     scope: str,
     cwd: Path | None = None,
     force_shared: bool = False,
+    backup: bool = True,
+    interactive: bool = True,
 ) -> int:
     """Install all bundled skills to the target host and scope.
 
@@ -432,8 +498,15 @@ def install_all(
     """
     results: list[tuple[str, int]] = []
     for skill_name in list_bundled_skills():
-        rc = install_skill(
-            skill_name, host, scope, cwd, overwrite=True, force_shared=force_shared
+        rc = install_entrypoint(
+            skill_name,
+            host,
+            scope,
+            cwd,
+            overwrite=True,
+            force_shared=force_shared,
+            backup=backup,
+            interactive=interactive,
         )
         results.append((skill_name, rc))
     failed = [name for name, rc in results if rc != 0]
@@ -449,6 +522,7 @@ def install_agent(
     scope: str,
     cwd: Path | None = None,
     overwrite: bool = False,
+    skip_deps: bool = False,
 ) -> int:
     """Copy a bundled agent definition file to the target agents directory.
 

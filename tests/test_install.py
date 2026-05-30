@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from universal_creator.install import (
+    install_entrypoint,
     install_skill,
     resolve_agent_target,
     resolve_target,
@@ -132,7 +133,9 @@ class InstallTargetResolutionTests(unittest.TestCase):
             self.assertEqual(result, 1)
             self.assertTrue((dest / "old.txt").exists())
 
-    def test_install_skill_overwrites_existing_destination_when_requested(self) -> None:
+    def test_install_entrypoint_overwrites_existing_destination_when_requested(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             bundled = root / "bundled-skills"
@@ -155,12 +158,14 @@ class InstallTargetResolutionTests(unittest.TestCase):
                     return_value=bundled,
                 ),
             ):
-                result = install_skill(
+                result = install_entrypoint(
                     "hook-generator",
                     "copilot",
                     "local",
                     cwd,
                     overwrite=True,
+                    backup=False,
+                    interactive=False,
                 )
 
             self.assertEqual(result, 0)
