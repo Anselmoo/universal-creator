@@ -1,4 +1,5 @@
 ---
+family: universal
 name: universal-plan
 description: >-
   Builds a validated plan. Use when scoping coordinated work.
@@ -13,6 +14,7 @@ disable-model-invocation: true
 color: blue
 effort: high
 tools:
+- agent
 - vscode/memory
 - vscode/askQuestions
 - read/getNotebookSummary

@@ -1,4 +1,5 @@
 ---
+family: universal
 name: artifact-router
 description: >-
   Routes next artifacts. Use for hook, skill, prompt, or agent choices.

@@ -1,4 +1,5 @@
 ---
+family: universal
 name: universal-explore
 description: >-
   Performs fast read-only discovery. Use for targeted planning research.

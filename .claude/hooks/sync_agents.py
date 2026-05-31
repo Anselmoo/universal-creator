@@ -1,51 +1,91 @@
 #!/usr/bin/env python3
-"""Mirror `.github/agents` into `agents` for local agent discovery parity."""
+"""Mirror agent files across repository agent roots.
+
+This script ensures agent files present in any recognized agent root
+(`.github/agents`, `.claude/agents`, `agents`, `.codex/agents`, `.gemini/agents`)
+are copied into other existing roots. It is conservative: files are added/updated
+but not removed to avoid accidental deletions.
+"""
 
 from __future__ import annotations
 
-import shutil
 import sys
 from pathlib import Path
+from typing import List
 
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
+def _candidate_agent_dirs(root: Path) -> List[Path]:
+    return [
+        root / ".github" / "agents",
+        root / ".claude" / "agents",
+        root / "agents",
+        root / ".codex" / "agents",
+        root / ".gemini" / "agents",
+    ]
+
+
 def sync_agents() -> int:
     root = _repo_root()
-    src_dir = root / ".github" / "agents"
-    dst_dir = root / "agents"
+    candidate_dirs = _candidate_agent_dirs(root)
 
-    if not src_dir.is_dir():
-        print(f"sync_agents: source directory missing: {src_dir}", file=sys.stderr)
-        return 1
+    # Gather existing dirs and all agent files found across them
+    existing_dirs = [d for d in candidate_dirs if d.exists() and d.is_dir()]
+    if not existing_dirs:
+        print("sync_agents: no agent directories found; nothing to do", file=sys.stderr)
+        return 0
 
-    dst_dir.mkdir(parents=True, exist_ok=True)
+    union_files = {}
+    for d in existing_dirs:
+        for p in d.glob("*.agent.md"):
+            try:
+                data = p.read_bytes()
+            except OSError:
+                continue
+            union_files[p.name] = data
 
-    src_files = sorted(src_dir.glob("*.agent.md"))
-    src_names = {p.name for p in src_files}
+    if not union_files:
+        print(
+            "sync_agents: no agent files found in existing agent roots", file=sys.stderr
+        )
+        return 0
 
     copied = 0
-    unchanged = 0
+    updated = 0
+    skipped = 0
 
-    for src in src_files:
-        dst = dst_dir / src.name
-        if dst.exists() and src.read_bytes() == dst.read_bytes():
-            unchanged += 1
-            continue
-        shutil.copy2(src, dst)
-        copied += 1
-
-    removed = 0
-    for dst in sorted(dst_dir.glob("*.agent.md")):
-        if dst.name not in src_names:
-            dst.unlink()
-            removed += 1
+    # Ensure every existing dir contains all union files
+    for d in existing_dirs:
+        d.mkdir(parents=True, exist_ok=True)
+        for name, data in union_files.items():
+            dst = d / name
+            if dst.exists():
+                try:
+                    existing = dst.read_bytes()
+                except OSError:
+                    existing = None
+                if existing == data:
+                    skipped += 1
+                    continue
+                # update
+                try:
+                    dst.write_bytes(data)
+                    updated += 1
+                except OSError:
+                    print(f"sync_agents: could not update {dst}", file=sys.stderr)
+            else:
+                try:
+                    dst.write_bytes(data)
+                    copied += 1
+                except OSError:
+                    print(f"sync_agents: could not copy to {dst}", file=sys.stderr)
 
     print(
-        f"sync_agents: copied={copied} unchanged={unchanged} removed={removed} "
-        f"source={src_dir} target={dst_dir}"
+        f"sync_agents: copied={copied} updated={updated} skipped={skipped} "
+        f"roots={len(existing_dirs)}"
     )
     return 0
 

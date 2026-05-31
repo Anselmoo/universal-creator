@@ -1,4 +1,5 @@
 ---
+family: universal
 name: prompt-strategist
 description: >-
   Designs prompt briefs. Use for task prompts, chains, and handoffs.

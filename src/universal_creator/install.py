@@ -516,6 +516,27 @@ def install_all(
     return 0
 
 
+def _parse_agent_family(path: Path) -> str | None:
+    """Parse a bundled agent file for a top-level `family: <name>` field.
+
+    Looks in the YAML frontmatter if present, otherwise scans the first 40
+    lines for a `family:` key. Returns the family name or None if not found.
+    """
+    try:
+        text = path.read_text(encoding="utf-8")
+    except Exception:
+        return None
+    # Frontmatter style: ---\nkey: value\n---
+    parts = text.split("---", 2)
+    fm = parts[1] if len(parts) >= 3 else "\n".join(text.splitlines()[:40])
+    for line in fm.splitlines():
+        line = line.strip()
+        if line.startswith("family:"):
+            _, val = line.split(":", 1)
+            return val.strip()
+    return None
+
+
 def install_agent(
     agent_name: str,
     host: str,
@@ -525,6 +546,11 @@ def install_agent(
     skip_deps: bool = False,
 ) -> int:
     """Copy a bundled agent definition file to the target agents directory.
+
+    When an agent declares a `family: <name>` field in its frontmatter, install
+    will expand and deploy all agents that share the same family name. This
+    allows a single request like ``--agent universal-plan`` to install an
+    orchestrator plus its companion agents.
 
     Returns 0 on success, 1 on error.
     """
@@ -536,20 +562,55 @@ def install_agent(
         )
         return 1
 
-    src = get_bundled_agents_dir() / f"{agent_name}.agent.md"
+    agents_dir = get_bundled_agents_dir()
+    src = agents_dir / f"{agent_name}.agent.md"
+
+    # Determine if this agent is part of a family. If so, collect all members.
+    family = _parse_agent_family(src)
+    to_install: list[str]
+    if family:
+        to_install = []
+        for child in agents_dir.iterdir():
+            if (
+                not child.is_file()
+                or child.suffix != ".md"
+                or not child.stem.endswith(".agent")
+            ):
+                continue
+            f = _parse_agent_family(child)
+            if f == family:
+                to_install.append(child.stem.removesuffix(".agent"))
+        # Always ensure the requested agent is present and preserve ordering
+        if agent_name not in to_install:
+            to_install.append(agent_name)
+        to_install = sorted(dict.fromkeys(to_install))
+    else:
+        to_install = [agent_name]
+
     target_dir = resolve_agent_target(host, scope, cwd or Path.cwd())
-    dest = target_dir / f"{agent_name}.agent.md"
-
-    if dest.exists():
-        if not overwrite:
-            print(
-                f"ERROR: {dest} already exists. Pass --overwrite to replace.",
-                file=sys.stderr,
-            )
-            return 1
-        dest.unlink()
-
     target_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(src, dest)
-    print(f"Installed '{agent_name}' → {dest}")
+
+    installed = []
+    for name in to_install:
+        src_path = agents_dir / f"{name}.agent.md"
+        if not src_path.is_file():
+            print(f"ERROR: Agent source not found: {src_path}", file=sys.stderr)
+            return 1
+        dest = target_dir / f"{name}.agent.md"
+        if dest.exists():
+            if not overwrite:
+                print(
+                    f"Skipped '{name}' (exists at {dest}); pass --overwrite to replace.",
+                    file=sys.stderr,
+                )
+                continue
+            dest.unlink()
+        shutil.copy2(src_path, dest)
+        installed.append(dest)
+        print(f"Installed '{name}' → {dest}")
+
+    if not installed:
+        print("No agents were installed.", file=sys.stderr)
+        return 1
+    # Success
     return 0

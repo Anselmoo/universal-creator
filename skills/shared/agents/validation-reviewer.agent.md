@@ -1,4 +1,5 @@
 ---
+family: universal
 name: validation-reviewer
 description: >-
   Reviews handoff readiness. Use before approval or delegation.
